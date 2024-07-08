@@ -3,9 +3,11 @@
 <head>
   <title>Distance Chart</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
 </head>
 <body>
   <canvas id="myChart" width="400" height="400"></canvas>
+  <button onclick="toggleLED()">Toggle LED</button>
   <script>
     let xCounter = 1;
 
@@ -14,7 +16,10 @@
       datasets: [{
         label: 'Distance',
         data: [],
-        backgroundColor: 'red'
+        backgroundColor: 'red',
+        borderColor: 'red',
+        showLine: true,
+        fill: false
       }]
     };
 
@@ -67,6 +72,21 @@
         plugins: {
           legend: {
             display: false
+          },
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'xy',
+            },
+            zoom: {
+              wheel: {
+                enabled: true,
+              },
+              pinch: {
+                enabled: true
+              },
+              mode: 'xy',
+            }
           }
         }
       }
@@ -102,20 +122,27 @@
     }
 
     function fetchData() {
-  fetch('http://192.168.228.158/distance')
-    .then(response => response.json())
-    .then(data => {
-      const newPoint = { x: xCounter, y: data.distance };
-      myChart.data.datasets[0].data.push(newPoint);
-      updateAxisLimits(xCounter, data.distance);
-      myChart.update();
-      xCounter++;
-    })
-    .catch(error => console.error('Error:', error));
-}
+      fetch('http://192.168.0.104/distance')
+        .then(response => response.json())
+        .then(data => {
+          const newPoint = { x: xCounter, y: data.distance };
+          myChart.data.datasets[0].data.push(newPoint);
+          updateAxisLimits(xCounter, data.distance);
+          myChart.update();
+          xCounter++;
+        })
+        .catch(error => console.error('Error:', error));
+    }
 
-setInterval(fetchData, 1000);
-
+    setInterval(fetchData, 1000);
+    function toggleLED() {
+      fetch('http://192.168.0.104/toggle')
+        .then(response => response.json())
+        .then(data => {
+          console.log('LED:', data.led);
+        })
+        .catch(error => console.error('Error:', error));
+    }
   </script>
 </body>
 </html>
