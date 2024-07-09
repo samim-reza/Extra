@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Distance Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
+</head>
+<body>
+  <canvas id="myChart" width="400" height="400"></canvas>
+  <button onclick="toggleLED()">Toggle LED</button>
+  <script>
+    let xCounter = 1;
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const data = {
+      datasets: [{
+        label: 'Distance',
+        data: [],
+        backgroundColor: 'red',
+        borderColor: 'red',
+        showLine: true,
+        fill: false
+      }]
+    };
+
+    const config = {
+      type: 'scatter',
+      data: data,
+      options: {
+        scales: {
+          x: {
+            type: 'linear',
+            position: 'bottom',
+            title: {
+              display: true,
+              text: 'X-Axis'
+            },
+            grid: {
+              drawOnChartArea: true,
+              color: 'rgba(0, 0, 0, 0.1)',
+              lineWidth: 1,
+              drawTicks: false,
+              tickLength: 0
+            },
+            ticks: {
+              stepSize: 1,
+              callback: function(value) { return value; },
+              precision: 0
+            },
+            min: 0
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Distance (cm)'
+            },
+            grid: {
+              drawOnChartArea: true,
+              color: 'rgba(0, 0, 0, 0.1)',
+              lineWidth: 1,
+              drawTicks: false,
+              tickLength: 0
+            },
+            ticks: {
+              stepSize: 1,
+              callback: function(value) { return value; },
+              precision: 0
+            },
+            min: 0
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'xy',
+            },
+            zoom: {
+              wheel: {
+                enabled: true,
+              },
+              pinch: {
+                enabled: true
+              },
+              mode: 'xy',
+            }
+          }
+        }
+      }
+    };
+
+    const myChart = new Chart(ctx, config);
+
+    function updateAxisLimits(newX, newY) {
+      const xScale = myChart.options.scales.x;
+      const yScale = myChart.options.scales.y;
+
+      let updated = false;
+
+      if (newX < xScale.min) {
+        xScale.min = newX;
+        updated = true;
+      } else if (newX > xScale.max) {
+        xScale.max = newX;
+        updated = true;
+      }
+
+      if (newY < yScale.min) {
+        yScale.min = newY;
+        updated = true;
+      } else if (newY > yScale.max) {
+        yScale.max = newY;
+        updated = true;
+      }
+
+      if (updated) {
+        myChart.update();
+      }
+    }
+    var link = '192.169.1.1'
+    function fetchData() {
+      fetch(`http://{link}/distance`)
+        .then(response => response.json())
+        .then(data => {
+          const newPoint = { x: xCounter, y: data.distance };
+          myChart.data.datasets[0].data.push(newPoint);
+          updateAxisLimits(xCounter, data.distance);
+          myChart.update();
+          xCounter++;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    setInterval(fetchData, 1000);
+    function toggleLED() {
+      fetch(`http://${link}/toggle`)
+        .then(response => response.json())
+        .then(data => {
+          console.log('LED:', data.led);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  </script>
+</body>
+</html>
