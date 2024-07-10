@@ -9,7 +9,7 @@ Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
 
 #define trigPin D4
 #define echoPin D5
-#define DHTPIN A0
+#define DHTPIN D7
 #define DHTTYPE DHT22
 
 DHT dht(DHTPIN, DHTTYPE);
@@ -75,6 +75,7 @@ void handleDistance() {
   Serial.println(distance);
   server.sendHeader("Access-Control-Allow-Origin", "*");
   server.send(200, "application/json", response);
+  delay(2000);
 }
 
 void handleTemperature() {
@@ -91,6 +92,7 @@ void handleTemperature() {
   Serial.println(response);
   server.sendHeader("Access-Control-Allow-Origin", "*");
   server.send(200, "application/json", response);
+  delay(2000);
 }
 
 void handleIMU() {
@@ -110,5 +112,6 @@ void handleIMU() {
   Serial.println(response);
   server.sendHeader("Access-Control-Allow-Origin", "*");
   server.send(200, "application/json", response);
+   delay(2000);
 }
 
