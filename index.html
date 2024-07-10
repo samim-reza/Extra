@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Distance Chart</title>
+  <title>Sensor Data Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
 
@@ -14,12 +14,11 @@
 
     .first-row {
       display: flex;
-      /* justify-content: space-between; */
     }
 
     .chart-container {
       width: 44%;
-      height: 300px;
+      height: 450px;
       border: 2px solid grey;
       margin: 15px;
       padding: 10px;
@@ -29,17 +28,13 @@
     .thermometer {
       width: 8%;
     }
-  </style>
 
-
-  <style>
     @import url("https://fonts.googleapis.com/css?family=Jaldi&display=swap");
 
     body {
       display: flex;
       height: 100vh;
       margin: 0;
-      background: #3d3d44;
       font-family: "Jaldi", sans-serif;
       font-size: 14px;
       color: white;
@@ -67,7 +62,6 @@
 
     #termometer {
       width: 25px;
-      background: #38383f;
       height: 240px;
       position: relative;
       border: 9px solid #2a2a2e;
@@ -87,7 +81,7 @@
       width: 100%;
       height: 34px;
       bottom: 9px;
-      background: #38383f;
+      background: #f9f9fc;
       z-index: -1;
     }
 
@@ -140,7 +134,7 @@
     #termometer #temperature:before {
       content: attr(data-value);
       background: rgba(0, 0, 0, 0.7);
-      color: white;
+      color: rgb(0, 0, 0);
       z-index: 2;
       padding: 5px 10px;
       border-radius: 5px;
@@ -218,48 +212,44 @@
       <div class="thermometer">
         <div id="wrapper">
           <div id="termometer">
-            <div id="temperature" style="height:0" data-value="0°C"></div>
+            <div id="temperature-thermo" style="height:0" data-value="0°C"></div>
             <div id="graduations"></div>
           </div>
         </div>
+        <h2 style="color: black; text-align: center;">Temperature</h2>
       </div>
     </div>
 
     <div class="first-row">
 
       <div class="chart-container">
-        <canvas id="hmd-chart" width="45%" height="300px"></canvas>
+        <canvas id="hmd-chart" width="auto" height="300px"></canvas>
       </div>
 
       <div class="chart-container">
-        <canvas id="imu-chart" width="45%" height="300px"></canvas>
+        <canvas id="imu-chart" width="auto" height="300px"></canvas>
       </div>
 
       <div class="thermometer">
         <div id="wrapper">
           <div id="termometer">
-            <div id="temperature" style="height:0" data-value="0°C"></div>
+            <div id="humidity-thermo" style="height:0" data-value="0%"></div>
             <div id="graduations"></div>
           </div>
         </div>
-        <h5>HMD</h5>
+        <h2 style="color: black; text-align: center;">Humidity</h2>
       </div>
     </div>
-    <!-- <div class="temp-chart-container">
-      <canvas id="temp-chart" width="100" height="100"></canvas>
-    </div> -->
   </div>
-  <!-- <button onclick="toggleLED()">Toggle LED</button> -->
   <script>
     let xCounter = 1;
 
-    const ctx = document.getElementById('distance-chart').getContext('2d');
-    const tctx = document.getElementById('temp-chart').getContext('2d');
-
-
-    const imuCtx = document.getElementById('imu-chart').getContext('2d');
+    const distanceCtx = document.getElementById('distance-chart').getContext('2d');
+    const tempCtx = document.getElementById('temp-chart').getContext('2d');
     const hmdCtx = document.getElementById('hmd-chart').getContext('2d');
-    const data = {
+    const imuCtx = document.getElementById('imu-chart').getContext('2d');
+
+    const distanceData = {
       datasets: [{
         label: 'Distance',
         data: [],
@@ -270,9 +260,42 @@
       }]
     };
 
+    const tempData = {
+      datasets: [{
+        label: 'Temperature',
+        data: [],
+        backgroundColor: 'blue',
+        borderColor: 'blue',
+        showLine: true,
+        fill: false
+      }]
+    };
+
+    const hmdData = {
+      datasets: [{
+        label: 'Humidity',
+        data: [],
+        backgroundColor: 'green',
+        borderColor: 'green',
+        showLine: true,
+        fill: false
+      }]
+    };
+
+    const imuData = {
+      datasets: [{
+        label: 'IMU',
+        data: [],
+        backgroundColor: 'orange',
+        borderColor: 'orange',
+        showLine: true,
+        fill: false
+      }]
+    };
+
     const config = {
-      type: 'scatter',
-      data: data,
+      type: 'line',
+      data: distanceData,
       options: {
         scales: {
           x: {
@@ -280,7 +303,7 @@
             position: 'bottom',
             title: {
               display: true,
-              text: 'X-Axis'
+              text: 'Time'
             },
             grid: {
               drawOnChartArea: true,
@@ -292,172 +315,139 @@
             ticks: {
               stepSize: 1,
               callback: function (value) { return value; },
-              precision: 0
+              precision: 0,
+              autoSkip: true,
+              maxRotation: 0,
+              minRotation: 0
             },
-            min: 0
+            beginAtZero: true
           },
           y: {
-            title: {
-              display: true,
-              text: 'Distance (cm)'
-            },
+            beginAtZero: true,
             grid: {
               drawOnChartArea: true,
               color: 'rgba(0, 0, 0, 0.1)',
               lineWidth: 1,
               drawTicks: false,
               tickLength: 0
-            },
-            ticks: {
-              stepSize: 1,
-              callback: function (value) { return value; },
-              precision: 0
-            },
-            min: 0
+            }
           }
         },
         plugins: {
-          legend: {
-            display: false
-          },
           zoom: {
             pan: {
               enabled: true,
-              mode: 'xy',
+              mode: 'x'
             },
             zoom: {
-              wheel: {
-                enabled: true,
-              },
-              pinch: {
-                enabled: true
-              },
-              mode: 'xy',
+              enabled: true,
+              mode: 'x'
             }
           }
         }
       }
     };
 
-    const myChart = new Chart(ctx, config);
-    const tempChart = new Chart(tctx, config);
-    const hmdChart = new Chart(hmdCtx, config);
-    const imuChart = new Chart(imuCtx, config);
+    const distanceChart = new Chart(distanceCtx, config);
+    const tempChart = new Chart(tempCtx, { ...config, data: tempData });
+    const hmdChart = new Chart(hmdCtx, { ...config, data: hmdData });
+    const imuChart = new Chart(imuCtx, { ...config, data: imuData });
 
-    function updateAxisLimits(newX, newY) {
-      const xScale = myChart.options.scales.x;
-      const yScale = myChart.options.scales.y;
-
-      let updated = false;
-
-      if (newX < xScale.min) {
-        xScale.min = newX;
-        updated = true;
-      } else if (newX > xScale.max) {
-        xScale.max = newX;
-        updated = true;
-      }
-
-      if (newY < yScale.min) {
-        yScale.min = newY;
-        updated = true;
-      } else if (newY > yScale.max) {
-        yScale.max = newY;
-        updated = true;
-      }
-
-      if (updated) {
-        myChart.update();
-      }
-    }
-    var link = '192.169.1.1'
     function fetchData() {
-      fetch(`http://${link}/distance`)
+      fetch('http://192.168.0.199/distance')
         .then(response => response.json())
         .then(data => {
-          const newPoint = { x: xCounter, y: data.distance };
-          myChart.data.datasets[0].data.push(newPoint);
-          updateAxisLimits(xCounter, data.distance);
-          myChart.update();
+          const currentTime = new Date();
+          const timeLabel = `${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
+
+          distanceChart.data.labels.push(timeLabel);
+          distanceChart.data.datasets[0].data.push({ x: xCounter, y: data.distance });
+          distanceChart.update();
+
+          tempChart.data.labels.push(timeLabel);
+          tempChart.data.datasets[0].data.push({ x: xCounter, y: data.temperature });
+          tempChart.update();
+
+          hmdChart.data.labels.push(timeLabel);
+          hmdChart.data.datasets[0].data.push({ x: xCounter, y: data.humidity });
+          hmdChart.update();
+
+          imuChart.data.labels.push(timeLabel);
+          imuChart.data.datasets[0].data.push({ x: xCounter, y: data.imu });
+          imuChart.update();
+
           xCounter++;
+
+          const tempPercentage = (data.temperature - 20) / 60 * 100;
+          const hmdPercentage = data.humidity;
+          document.getElementById('temperature-thermo').style.height = `${tempPercentage}%`;
+          document.getElementById('temperature-thermo').setAttribute('data-value', `${data.temperature}°C`);
+
+          document.getElementById('humidity-thermo').style.height = `${hmdPercentage}%`;
+          document.getElementById('humidity-thermo').setAttribute('data-value', `${data.humidity}%`);
+
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function fetchTemperature() {
+      fetch('http://192.168.0.199/temperature')
+        .then(response => response.json())
+        .then(data => {
+          const currentTime = new Date();
+          const timeLabel = `${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
+
+          tempChart.data.labels.push(timeLabel);
+          tempChart.data.datasets[0].data.push({ x: xCounter, y: data.temperature });
+          tempChart.update();
+
+          const tempPercentage = (data.temperature - 20) / 60 * 100;
+          document.getElementById('temperature-thermo').style.height = `${tempPercentage}%`;
+          document.getElementById('temperature-thermo').setAttribute('data-value', `${data.temperature}°C`);
+
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function fetchHumidity() {
+      fetch('http://192.168.0.199/temperature')
+        .then(response => response.json())
+        .then(data => {
+          const currentTime = new Date();
+          const timeLabel = `${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
+
+          hmdChart.data.labels.push(timeLabel);
+          hmdChart.data.datasets[0].data.push({ x: xCounter, y: data.humidity });
+          hmdChart.update();
+
+          const hmdPercentage = data.humidity;
+          document.getElementById('humidity-thermo').style.height = `${hmdPercentage}%`;
+          document.getElementById('humidity-thermo').setAttribute('data-value', `${data.humidity}%`);
+
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function fetchIMU() {
+      fetch('http://192.168.0.199/imu')
+        .then(response => response.json())
+        .then(data => {
+          const currentTime = new Date();
+          const timeLabel = `${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
+
+          imuChart.data.labels.push(timeLabel);
+          imuChart.data.datasets[0].data.push({ x: xCounter, y: data.imu });
+          imuChart.update();
+
         })
         .catch(error => console.error('Error:', error));
     }
 
     setInterval(fetchData, 1000);
-    function toggleLED() {
-      fetch(`http://${link}/toggle`)
-        .then(response => response.json())
-        .then(data => {
-          console.log('LED:', data.led);
-        })
-        .catch(error => console.error('Error:', error));
-    }
-
-    const temperature = document.getElementById("temperature-hmd");
-
-function setTemperature() {
-  temperature.style.height = (range.value - config.minTemp) / (config.maxTemp - config.minTemp) * 100 + "%";
-  temperature.dataset.value = range.value + units[config.unit];
-}
+    setInterval(fetchTemperature, 1000);
+    setInterval(fetchHumidity, 1000);
+    setInterval(fetchIMU, 1000);
   </script>
-<!-- 
-  <script>
-
-    const units = {
-      Celcius: "°C",
-      Fahrenheit: "°F"
-    };
-
-    const config = {
-      minTemp: -20,
-      maxTemp: 50,
-      unit: "Celcius"
-    };
-
-    // Change min and max temperature values
-
-    const tempValueInputs = document.querySelectorAll("input[type='text']");
-
-    tempValueInputs.forEach((input) => {
-      input.addEventListener("change", (event) => {
-        const newValue = event.target.value;
-
-        if (isNaN(newValue)) {
-          return input.value = config[input.id];
-        } else {
-          config[input.id] = input.value;
-          range[input.id.slice(0, 3)] = config[input.id]; // Update range
-          return setTemperature(); // Update temperature
-        }
-      });
-    });
-
-    // Switch unit of temperature
-
-    const unitP = document.getElementById("unit");
-
-    unitP.addEventListener("click", () => {
-      config.unit = config.unit === "Celcius" ? "Fahrenheit" : "Celcius";
-      unitP.innerHTML = config.unit + ' ' + units[config.unit];
-      return setTemperature();
-    })
-
-    // Change temperature
-
-    const range = document.querySelector("input[type='range']");
-    const temperature = document.getElementById("temperature");
-
-    function setTemperature() {
-      temperature.style.height = (range.value - config.minTemp) / (config.maxTemp - config.minTemp) * 100 + "%";
-      temperature.dataset.value = range.value + units[config.unit];
-    }
-
-    range.addEventListener("input", setTemperature);
-    setTimeout(setTemperature, 1000);100wh
-
-
-  </script> -->
 </body>
 
 </html>
