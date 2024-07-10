@@ -5,6 +5,7 @@
   <title>Sensor Data Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
     .root-container {
@@ -202,11 +203,11 @@
     <div class="first-row">
 
       <div class="chart-container">
-        <canvas id="distance-chart" width="auto" height="300px"></canvas>
+        <canvas id="distance-chart" width="550" height="300px"></canvas>
       </div>
 
       <div class="chart-container">
-        <canvas id="temp-chart" width="auto" height="300px"></canvas>
+        <canvas id="temp-chart" width="550" height="300px"></canvas>
       </div>
 
       <div class="thermometer">
@@ -223,11 +224,7 @@
     <div class="first-row">
 
       <div class="chart-container">
-        <canvas id="hmd-chart" width="auto" height="300px"></canvas>
-      </div>
-
-      <div class="chart-container">
-        <canvas id="imu-chart" width="auto" height="300px"></canvas>
+        <canvas id="hmd-chart" width="550" height="300px"></canvas>
       </div>
 
       <div class="thermometer">
@@ -239,6 +236,8 @@
         </div>
         <h2 style="color: black; text-align: center;">Humidity</h2>
       </div>
+
+      <div id="threejs-container" class="chart-container"></div>
     </div>
   </div>
   <script>
@@ -247,7 +246,6 @@
     const distanceCtx = document.getElementById('distance-chart').getContext('2d');
     const tempCtx = document.getElementById('temp-chart').getContext('2d');
     const hmdCtx = document.getElementById('hmd-chart').getContext('2d');
-    const imuCtx = document.getElementById('imu-chart').getContext('2d');
 
     const distanceData = {
       datasets: [{
@@ -277,17 +275,6 @@
         data: [],
         backgroundColor: 'green',
         borderColor: 'green',
-        showLine: true,
-        fill: false
-      }]
-    };
-
-    const imuData = {
-      datasets: [{
-        label: 'IMU',
-        data: [],
-        backgroundColor: 'orange',
-        borderColor: 'orange',
         showLine: true,
         fill: false
       }]
@@ -351,7 +338,6 @@
     const distanceChart = new Chart(distanceCtx, config);
     const tempChart = new Chart(tempCtx, { ...config, data: tempData });
     const hmdChart = new Chart(hmdCtx, { ...config, data: hmdData });
-    const imuChart = new Chart(imuCtx, { ...config, data: imuData });
 
     function fetchData() {
       fetch('http://192.168.0.199/distance')
@@ -371,10 +357,6 @@
           hmdChart.data.labels.push(timeLabel);
           hmdChart.data.datasets[0].data.push({ x: xCounter, y: data.humidity });
           hmdChart.update();
-
-          imuChart.data.labels.push(timeLabel);
-          imuChart.data.datasets[0].data.push({ x: xCounter, y: data.imu });
-          imuChart.update();
 
           xCounter++;
 
@@ -428,25 +410,41 @@
         .catch(error => console.error('Error:', error));
     }
 
-    function fetchIMU() {
-      fetch('http://192.168.0.199/imu')
-        .then(response => response.json())
-        .then(data => {
-          const currentTime = new Date();
-          const timeLabel = `${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
+    function initThreeJS() {
+      const container = document.getElementById('threejs-container');
+      const width = container.clientWidth;
+      const height = container.clientHeight;
 
-          imuChart.data.labels.push(timeLabel);
-          imuChart.data.datasets[0].data.push({ x: xCounter, y: data.imu });
-          imuChart.update();
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(width, height);
+      container.appendChild(renderer.domElement);
 
-        })
-        .catch(error => console.error('Error:', error));
+      const geometry = new THREE.BoxGeometry();
+      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+
+      camera.position.z = 5;
+
+      const animate = function () {
+        requestAnimationFrame(animate);
+
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+
+        renderer.render(scene, camera);
+      };
+
+      animate();
     }
 
-    setInterval(fetchData, 1000);
-    setInterval(fetchTemperature, 1000);
-    setInterval(fetchHumidity, 1000);
-    setInterval(fetchIMU, 1000);
+    setInterval(fetchData, 1500);
+    setInterval(fetchTemperature, 1500);
+    setInterval(fetchHumidity, 1500);
+
+    initThreeJS();
   </script>
 </body>
 
