@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>My first three.js app</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById('myCanvas');
+
+        // Set up the scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // Add a basic light
+        const light = new THREE.AmbientLight(0x404040);
+        scene.add(light);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 5, 5).normalize();
+        scene.add(directionalLight);
+
+        let car; // Variable to hold the car model object
+
+        // Load the GLTF model
+        const loader = new THREE.GLTFLoader();
+        loader.load('car1/scene.gltf', function (gltf) {
+            car = gltf.scene;
+            scene.add(car);
+        }, undefined, function (error) {
+            console.error(error);
+        });
+
+        // Set the camera position
+        camera.position.z = 5;
+
+        // Rotation variables
+        let rotationSpeed = 0.01;
+        let rotationDirection = 1;
+
+        // Create an animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotate the car
+            if (car) {
+                car.rotation.y += rotationSpeed * rotationDirection;
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>

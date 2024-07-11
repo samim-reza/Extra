@@ -9,10 +9,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            vertical-align: middle;
             height: 100vh;
-            margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0; /* Light gray background */
+            background-color: #f0f0f0;
         }
         .button-container {
             display: grid;
@@ -37,11 +37,14 @@
 <body>
     <div class="button-container">
         <button onclick="sendCommand('up')">Up</button>
-        <button onclick="sendCommand('down')">Down</button>
         <button onclick="sendCommand('left')">Left</button>
-        <button onclick="sendCommand('right')">Right</button>
         <button onclick="sendCommand('Open')">Open</button>
-        <button onclick="sendCommand('Close')">Close</button>
+        <button onclick="sendCommand('down')">Down</button>
+        <button onclick="sendCommand('right')">Right</button>
+        <button onclick="sendCommand('close')">Close</button>
+        <button onclick="sendCommand('forward')">Forward</button>
+        <button onclick="sendCommand('backward')">Backward</button>
+        <button onclick="sendCommand('rotate')">Rotate</button>
     </div>
     
     <script>
