@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Servo Control</title>
+<style>
+html { 
+    font-family: Helvetica; 
+    display: inline-block; 
+    margin: 0px auto; 
+    text-align: center;
+}
+body {
+    margin-top: 50px;
+}
+h1 {
+    color: #444444;
+    margin: 50px auto 30px;
+}
+h3 {
+    color: #444444;
+    margin-bottom: 50px;
+}
+.slider {
+    width: 300px;
+    margin: 15px auto;
+}
+button {
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+}
+</style>
+<script>
+function updateServo(servo, value) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/updateServo?" + servo + "=" + value, true);
+    xhr.send();
+}
+function setPosition(position) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/setPosition?position=" + position, true);
+    xhr.send();
+}
+</script>
+</head>
+<body>
+<h1>ESP8266 Servo Control</h1>
+<h3>Using Access Point(AP) Mode</h3>
+
+<p>Up-Down</p>
+<input type="range" min="{{upDownMin}}" max="{{upDownMax}}" value="{{upDownPos}}" class="slider" id="upDown" oninput="updateServo('upDown', this.value)">
+
+<p>Open-Close</p>
+<input type="range" min="{{openCloseMin}}" max="{{openCloseMax}}" value="{{openClosePos}}" class="slider" id="openClose" oninput="updateServo('openClose', this.value)">
+
+<p>Left-Right</p>
+<input type="range" min="0" max="360" value="{{leftRightPos}}" class="slider" id="leftRight" oninput="updateServo('leftRight', this.value)">
+
+<p>Forward-Backward</p>
+<input type="range" min="{{forwardBackwardMin}}" max="{{forwardBackwardMax}}" value="{{forwardBackwardPos}}" class="slider" id="forwardBackward" oninput="updateServo('forwardBackward', this.value)">
+
+<br>
+<button onclick="setPosition('lowest')">Lowest</button>
+<button onclick="setPosition('highest')">Highest</button>
+<button onclick="setPosition('middle')">Middle</button>
+
+</body>
+</html>

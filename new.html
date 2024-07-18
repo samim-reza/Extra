@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Car Scene</title>
+</head>
+<body>
+    <div id="scene3d"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/three@0.131.2/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.131.2/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+    var scene3d = document.getElementById("scene3d");
+    var CANVAS_WIDTH = 300;
+    var CANVAS_HEIGHT = 300;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, CANVAS_WIDTH / CANVAS_HEIGHT, 0.1, 100);
+    camera.position.x = 20;
+    camera.position.y = 10;
+    camera.position.z = 15;
+    camera.lookAt(new THREE.Vector3(0, 0, 0)); // Look at the center
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor(0x164256, 1);
+    renderer.setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
+    scene3d.appendChild(renderer.domElement);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.position.set(50, 30, 0); // x, y, z
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(dirLight, ambientLight);
+
+    const geometry = new THREE.BoxGeometry(10, 2.5, 5);
+    const material = new THREE.MeshPhongMaterial({
+        color: 0x0000ff,
+        shininess: 100,
+        specular: 0xffffff,
+    });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    // Create a new material for the edges
+    const edgesMaterial = new THREE.LineBasicMaterial({
+        color: 0x000000,
+    });
+
+    // Create a new geometry for the edges based on the box geometry
+    const edgesGeometry = new THREE.EdgesGeometry(geometry);
+
+    // Create a new LineSegments object using the edges geometry and edges material
+    const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+    scene.add(edges);
+
+    function fetchIMUData() {
+        fetch('http://192.168.0.109/imu')
+            .then(response => response.json())
+            .then(data => {
+                if (cube) {
+                    cube.rotation.x = (data.pitch * Math.PI) / 180;
+                    cube.rotation.y = (data.yaw * Math.PI) / 180;
+                    cube.rotation.z = (data.roll * Math.PI) / 180;
+
+                    edges.rotation.x = (data.pitch * Math.PI) / 180;
+                    edges.rotation.y = (data.yaw * Math.PI) / 180;
+                    edges.rotation.z = (data.roll * Math.PI) / 180;
+                }
+            })
+            .catch(error => console.error('Error fetching IMU data:', error));
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        fetchIMUData();
+        renderer.render(scene, camera);
+    }
+
+    animate();
+</script>
+</html>

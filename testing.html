@@ -1,64 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>My first three.js app</title>
-    <style>
-        body { margin: 0; }
-        canvas { display: block; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Three.js Car Rotation</title>
+  <style>
+    body { margin: 0; }
+    canvas { display: block; }
+  </style>
 </head>
 <body>
-    <canvas id="myCanvas"></canvas>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script>
-        // Get the canvas element
-        const canvas = document.getElementById('myCanvas');
+  <canvas id="threeD"></canvas>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+  <script>
+    const canvas = document.getElementById('threeD');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xffffff);
 
-        // Set up the scene, camera, and renderer
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas });
-        renderer.setSize(window.innerWidth, window.innerHeight);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas });
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-        // Add a basic light
-        const light = new THREE.AmbientLight(0x404040);
-        scene.add(light);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(5, 5, 5).normalize();
-        scene.add(directionalLight);
+    const light = new THREE.AmbientLight(0x404040);
+    scene.add(light);
 
-        let car; // Variable to hold the car model object
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 5, 5).normalize();
+    scene.add(directionalLight);
 
-        // Load the GLTF model
-        const loader = new THREE.GLTFLoader();
-        loader.load('car1/scene.gltf', function (gltf) {
-            car = gltf.scene;
-            scene.add(car);
-        }, undefined, function (error) {
-            console.error(error);
-        });
+    let car;
 
-        // Set the camera position
-        camera.position.z = 5;
+    const loader = new THREE.GLTFLoader();
+    loader.load('car1/scene.gltf', function (gltf) {
+      car = gltf.scene;
+      scene.add(car);
+    }, undefined, function (error) {
+      console.error(error);
+    });
 
-        // Rotation variables
-        let rotationSpeed = 0.01;
-        let rotationDirection = 1;
+    camera.position.z = 5;
 
-        // Create an animation loop
-        function animate() {
-            requestAnimationFrame(animate);
+    async function fetchThree() {
+      try {
+        const response = await fetch(`http://192.168.0.103/imu`);
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
 
-            // Rotate the car
-            if (car) {
-                car.rotation.y += rotationSpeed * rotationDirection;
-            }
+    function animate() {
+      requestAnimationFrame(animate);
+      fetchThree().then(data => {
+        if (car) {
+          const { ax, ay, az } = data;
 
-            renderer.render(scene, camera);
+          // Convert accelerometer data to rotation angles
+          const roll = Math.atan2(ay, az);
+          const pitch = Math.atan2(-ax, Math.sqrt(ay * ay + az * az));
+
+          // Apply rotations to the car model
+          car.rotation.x = pitch;
+          car.rotation.y = 0;
+          car.rotation.z = roll;
         }
-        animate();
-    </script>
+        renderer.render(scene, camera);
+      }).catch(error => {
+        console.error('Error fetching data:', error);
+      });
+    }
+
+    animate();
+  </script>
 </body>
 </html>
