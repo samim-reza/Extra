@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Car Rotation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="threeD"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+        const canvas = document.getElementById('threeD');
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const light = new THREE.AmbientLight(0x404040);
+        scene.add(light);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 5, 5).normalize();
+        scene.add(directionalLight);
+
+        let car;
+        const loader = new THREE.GLTFLoader();
+        loader.load('car1/scene.gltf', function (gltf) {
+            car = gltf.scene;
+            scene.add(car);
+        }, undefined, function (error) {
+            console.error(error);
+        });
+
+        async function fetchThree() {
+            var prev;
+            try {
+                const response = await fetch('http://192.168.0.100:8080/sensors.json');
+                const data = await response.json();
+                // console.log(data.accel.data.length);
+                prev = data;
+                return data;
+            } catch (error) {
+                // console.error('Error fetching data:', error);
+                return prev;
+            }
+        }
+
+        function calculateYaw(ax, ay) {
+            return Math.atan2(ay, ax);
+        }
+
+        function calculatePitch(ax, ay, az) {
+            return Math.atan2(ax, Math.sqrt(ay * ay + az * az));
+        }
+
+        function calculateRoll(ax, ay, az) {
+            return Math.atan2(ay, Math.sqrt(ax * ax + az * az));
+        }
+
+        async function animate() {
+            requestAnimationFrame(animate);
+
+            const data = await fetchThree();
+            if (data && car) {
+                const ax = data.accel.data[0][1][0];
+                const ay = data.accel.data[0][1][1];
+                const az = data.accel.data[0][1][2];
+
+                const gx = data.gyro.data[0][1][0];
+                const gz = data.gyro.data[0][1][2];
+
+                const yaw = calculateYaw(ax, ay);
+                // const pitch = calculatePitch(ax, ay, az);
+                // const roll = calculateRoll(ax, ay, az);
+
+                car.rotation.y = yaw;
+                car.rotation.x = gx;
+                car.rotation.z = gz;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // setInterval(animate, 5000);
+        animate();
+
+    </script>
+</body>
+
+</html>

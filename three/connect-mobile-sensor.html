@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Data Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .sensor-data {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sensor Data</h1>
+    <div class="sensor-data">
+        <p><strong>Ax:</strong> <span id="Ax">Loading...</span> m/s²</p>
+        <p><strong>Ay:</strong> <span id="Ay">Loading...</span> m/s²</p>
+        <p><strong>Az:</strong> <span id="Az">Loading...</span> m/s²</p>
+    </div>
+
+    <script>
+        async function fetchSensorData() {
+            try {
+                const response = await fetch('http://192.168.0.102:8080/sensors.json');
+                const data = await response.json();
+                
+                document.getElementById('Ax').textContent = data.accel.data[0][1][0];
+                document.getElementById('Ay').textContent = data.accel.data[0][1][1];
+                document.getElementById('Az').textContent = data.accel.data[0][1][2];
+            } catch (error) {
+                console.error('Error fetching the sensor data:', error);
+                document.getElementById('Ax').textContent = 'Error';
+                document.getElementById('Ay').textContent = 'Error';
+                document.getElementById('Az').textContent = 'Error';
+            }
+        }
+
+        // Fetch data immediately and then every second
+        fetchSensorData();
+        setInterval(fetchSensorData, 1000);
+    </script>
+</body>
+</html>

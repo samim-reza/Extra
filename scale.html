@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Scale</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .scale-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .ruler {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 100%;
+            height: 20px; /* Adjust based on your ruler image height */
+            background-image: url('image.png'); /* Update this with your image path */
+            background-size: cover;
+            pointer-events: none; /* Allows the slider to still be interacted with */
+        }
+
+        .slider {
+            width: 300px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            position: relative;
+            z-index: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #000;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .scale-value {
+            font-size: 1.5em;
+            width: 50px;
+            text-align: center;
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="scale-container">
+        <div class="ruler"></div>
+        <input type="range" id="scale" min="0" max="100" value="50" class="slider">
+        <div id="scale-value" class="scale-value">50</div>
+    </div>
+
+    <script>
+        const scale = document.getElementById('scale');
+        const scaleValue = document.getElementById('scale-value');
+
+        scale.addEventListener('input', () => {
+            scaleValue.textContent = scale.value;
+        });
+    </script>
+</body>
+</html>

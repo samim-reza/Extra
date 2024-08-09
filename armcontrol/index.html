@@ -34,12 +34,12 @@ button {
 <script>
 function updateServo(servo, value) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/updateServo?" + servo + "=" + value, true);
+    xhr.open("GET", "http://172.18.11.112/updateServo?" + servo + "=" + value, true);
     xhr.send();
 }
 function setPosition(position) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/setPosition?position=" + position, true);
+    xhr.open("GET", "http://172.18.11.112/setPosition?position=" + position, true);
     xhr.send();
 }
 </script>
