@@ -42,8 +42,9 @@
 
         let car;
         const loader = new THREE.GLTFLoader();
-        loader.load('car1/scene.gltf', function (gltf) {
+        loader.load('car.gltf', function (gltf) {
             car = gltf.scene;
+            car.scale.set(0.1, 0.1, 0.1);
             scene.add(car);
         }, undefined, function (error) {
             console.error(error);
@@ -88,8 +89,8 @@
                 const gz = data.gyro.data[0][1][2];
 
                 const yaw = calculateYaw(ax, ay);
-                // const pitch = calculatePitch(ax, ay, az);
-                // const roll = calculateRoll(ax, ay, az);
+                const pitch = calculatePitch(ax, ay, az);
+                const roll = calculateRoll(ax, ay, az);
 
                 car.rotation.y = yaw;
                 car.rotation.x = gx;

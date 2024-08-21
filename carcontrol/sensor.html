@@ -1,326 +1,699 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Sensor Data Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
-  <script type="text/javascript"
-    src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0"></script>
+    <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+        }
 
-  <style>
-    .container {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+        .left-box {
+            height: 100vh;
+            width: 30vw;
+            border: 2px solid black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+        }
 
-    }
+        .middle-box {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 40vw;
+            border: 2px solid black;
+            align-items: center;
+            justify-content: space-around;
 
-    .custom-row {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-    }
+        }
 
-    .chart-container {
-      width: 100%;
-      height: 100%;
-      border: 2px solid rgb(0, 0, 0);
-    }
+        .right-box {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 30vw;
+            border: 2px solid black;
+            align-items: center;
+            justify-content: space-around;
+        }
 
-    canvas {
-      width: 100%;
-      height: 100%;
-    }
+        #sensor-box {
+            height: 24%;
+            width: 97%;
+            border: 2px solid black;
+        }
 
-    #threeD canvas {
-      width: 100vw !important;
-      height: 100vh !important;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+        #threeD {
+            display: block;
+        }
 
-    #threeD {
-      display: block;
-    }
-  </style>
+        .speed-class {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 50%;
+            align-items: center;
+            padding-top: 25%;
+        }
 
+        #sensor-box canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .title-bar {
+            text-align: center;
+            width: 100%;
+            height: 10%;
+        }
+
+        .image {
+            width: 640px;
+            height: 480px;
+        }
+
+        .speed-compass {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            width: 100%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            color: inherit;
+            font: inherit;
+        }
+
+        form,
+        form * {
+            display: grid;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .js {
+            --js: 1;
+        }
+
+
+        datalist {
+            place-content: center;
+        }
+
+
+        form,
+        option {
+            place-items: center;
+        }
+
+        form {
+            --extra: 0;
+            --large: 0;
+            --not-large: calc(1 - var(--large));
+            --small: 0;
+            --not-small: calc(1 - var(--small));
+            --track-w: min(25em, 100vw - 2 * 1.75em);
+            overflow-x: hidden;
+            padding: 0.875em;
+            background: hsla(0, 0%, 91%, 1);
+            filter: grayscale(0);
+            transition: 0.35s;
+            border: 2px solid black;
+        }
+
+        @media (min-width: 28.5em) {
+            form {
+                --extra: 1;
+            }
+        }
+
+        @media (min-width: 320px) {
+            form {
+                --large: 1;
+            }
+        }
+
+        @media (max-width: 220px) {
+            form {
+                --small: 1;
+            }
+        }
+
+        label {
+            font-size: 137.5%;
+        }
+
+        [for] {
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            width: calc(var(--track-w) + 1.75em);
+            background: linear-gradient(90deg, #6a5acd, #00bfff, #00ff7f, #ff8c00, #dc143c) 50%/var(--track-w) 0.375em no-repeat;
+            cursor: pointer;
+            background-color: transparent;
+        }
+
+        input::-webkit-slider-runnable-track,
+        input::-webkit-slider-thumb,
+        input[type="range"] {
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            margin-top: -0.35em;
+            border: none;
+            width: 1.75em;
+            height: 1.75em;
+            background: currentcolor;
+            --poly: polygon(50% 100%, 6.6987298108% 25%, 93.3012701892% 25%);
+            -webkit-clip-path: var(--poly);
+            clip-path: var(--poly);
+            cursor: ew-resize;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            margin-top: -0.35em;
+            border: none;
+            width: 1.75em;
+            height: 1.75em;
+            background: currentcolor;
+            --poly: polygon(50% 100%, 6.6987298108% 25%, 93.3012701892% 25%);
+            -webkit-clip-path: var(--poly);
+            clip-path: var(--poly);
+            cursor: ew-resize;
+        }
+
+        input[type="range"]:focus {
+            outline: none;
+        }
+
+        input[type="range"]+output {
+            --rng: calc(var(--max) - var(--min));
+            --pos: calc((var(--val) - var(--min)) / var(--rng) * var(--track-w));
+            display: var(--js, none);
+            grid-row: 2;
+            justify-self: start;
+            transform: translate(calc(0.5 * 1.75em + var(--pos) - 50%));
+            counter-reset: val var(--val);
+        }
+
+        input[type="range"]+output::after {
+            content: counter(val);
+        }
+
+        datalist {
+            --track-u: calc(var(--track-w) / var(--n));
+            grid-auto-flow: column;
+            width: calc(var(--track-w) + 1px);
+            box-shadow: inset 0 1px currentcolor;
+            background: linear-gradient(90deg, currentcolor 1px, transparent 0) repeat-x;
+            background-size: calc(var(--track-u) / 5) calc(var(--extra) * 0.5 * 0.875em);
+        }
+
+        option {
+            --m: calc(var(--large));
+            width: calc(var(--m) * var(--track-u));
+            transform-origin: 50% 0;
+            transform: scale(min(1, var(--m)));
+            transition: transform 0.35s;
+        }
+
+        option:nth-child(odd) {
+            --m: calc(var(--large) + 2 * var(--not-large) * var(--not-small));
+        }
+
+        option:first-child,
+        option:last-child {
+            --m: calc(var(--large) + var(--not-large) * (2 * var(--not-small) + 0.5 * var(--n) * var(--small)));
+        }
+
+        option.mid {
+            --m: calc(var(--large) + var(--not-large) * 0.5 * var(--n) * var(--small));
+        }
+
+        option::before {
+            width: 1px;
+            height: 0.875em;
+            background: currentcolor;
+            content: "";
+        }
+
+        #chartdiv {
+            width: 50%;
+            height: 35%;
+        }
+    </style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="custom-row">
-      <div class="chart-container">
-        <canvas id="distance-chart"></canvas>
-      </div>
 
-      <div class="chart-container">
-        <canvas id="temp-chart"></canvas>
-      </div>
-      <div id="ther-container"></div>
+    <div class="left-box">
+        <div id="sensor-box">
+            <canvas id="temp-chart"></canvas>
+        </div>
+        <div id="sensor-box">
+            <canvas id="hmd-chart"></canvas>
+        </div>
     </div>
 
-    <div class="custom-row ">
-      <div class="chart-container">
-        <canvas id="hmd-chart"></canvas>
-      </div>
-      <div id="hmd-meter"></div>
-      <div class="chart-container">
-        <canvas id="threeD"></canvas>
-      </div>
+    <div class="middle-box">
+        <div class="title-bar" style="padding-top: 20px; padding-bottom: 20px;">
+            <h1 style="font-size:xx-large; font-weight: bolder;">Monitoring Dashhboard</h1>
+            <h3 style="font-size: x-large;">Rover prototype</h3>
+        </div>
+        <img class="image" src="" alt="Fetched Image">
+        <div class="speed-compass">
+            <div class="speed-class">
+                <h2 id="speed" style="font-size: xx-large;">Speed: 0 rpm</h2>
+            </div>
+            <div id="chartdiv"></div>
+        </div>
     </div>
-  </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script>
-    let xCounter = 1;
 
-    const distanceCtx = document.getElementById('distance-chart').getContext('2d');
-    const tempCtx = document.getElementById('temp-chart').getContext('2d');
-    const hmdCtx = document.getElementById('hmd-chart').getContext('2d');
+    <div class="right-box">
+        <div id="sensor-box">
+            <canvas id="distance-chart"></canvas>
+            <form style="--min: 0; --val: 180; --max: 360; --n: 12">
+                <label for="r">Distance(cm)</label>
+                <input id="r" type="range" value="0" min="0" max="360" list="l" />
+                <output for="r"></output>
+                <datalist id="l">
+                    <option>0</option>
+                    <option>30</option>
+                    <option>60</option>
+                    <option>90</option>
+                    <option>120</option>
+                    <option>150</option>
+                    <option class="mid">180</option>
+                    <option>210</option>
+                    <option>240</option>
+                    <option>270</option>
+                    <option>300</option>
+                    <option>330</option>
+                    <option>360</option>
+                </datalist>
 
-    const distanceData = {
-      datasets: [{
-        label: 'Distance',
-        data: [],
-        backgroundColor: 'red',
-        borderColor: 'red',
-        showLine: true,
-        fill: false
-      }]
-    };
+            </form>
+        </div>
+        <div id="sensor-box">
+            <canvas id="threeD"></canvas>
+        </div>
+    </div>
 
-    const tempData = {
-      datasets: [{
-        label: 'Temperature',
-        data: [],
-        backgroundColor: 'blue',
-        borderColor: 'blue',
-        showLine: true,
-        fill: false
-      }]
-    };
 
-    const hmdData = {
-      datasets: [{
-        label: 'Humidity',
-        data: [],
-        backgroundColor: 'green',
-        borderColor: 'green',
-        showLine: true,
-        fill: false
-      }]
-    };
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+    <script>
+        // Function to calculate heading from magnetometer data
+        function calculateHeading(magnetometerData) {
+            let Mx = magnetometerData[0];
+            let My = magnetometerData[1];
 
-    const config = {
-      type: 'line',
-      data: distanceData,
-      options: {
-        scales: {
-          x: {
-            type: 'linear',
-            position: 'bottom',
-            title: {
-              display: true,
-              text: 'Time'
-            },
-            grid: {
-              drawOnChartArea: true,
-              color: 'rgba(0, 0, 0, 0.1)',
-              lineWidth: 1,
-              drawTicks: false,
-              tickLength: 0
-            },
-            ticks: {
-              stepSize: 1,
-              callback: function (value) { return value; },
-              precision: 0,
-              autoSkip: true,
-              maxRotation: 0,
-              minRotation: 0
-            },
-            beginAtZero: true
-          },
-          y: {
-            beginAtZero: true,
-            grid: {
-              drawOnChartArea: true,
-              color: 'rgba(0, 0, 0, 0.1)',
-              lineWidth: 1,
-              drawTicks: false,
-              tickLength: 0
+            let heading = Math.atan2(My, Mx) * (180 / Math.PI);
+            if (heading < 0) {
+                heading += 360;
             }
-          }
-        },
-        plugins: {
-          zoom: {
-            pan: {
-              enabled: true,
-              mode: 'x'
-            },
-            zoom: {
-              enabled: true,
-              mode: 'x'
+            return heading;
+        }
+        var chart;
+        var northHand;
+        var southHand;
+        am4core.ready(function () {
+
+            // Themes begin
+            am4core.useTheme(am4themes_animated);
+            // Themes end
+
+            // create chart
+            chart = am4core.create("chartdiv", am4charts.GaugeChart);
+            chart.exporting.menu = new am4core.ExportMenu();
+            chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+
+            chart.startAngle = -90;
+            chart.endAngle = 270;
+
+            var axis = chart.xAxes.push(new am4charts.ValueAxis());
+            axis.min = 0;
+            axis.max = 360;
+
+            axis.renderer.line.strokeWidth = 8;
+            axis.renderer.line.strokeOpacity = 1;
+            axis.renderer.line.stroke = am4core.color("#999");
+            axis.renderer.inside = true;
+
+            axis.renderer.axisFills.template.disabled = true;
+            axis.renderer.grid.template.disabled = true;
+            axis.renderer.ticks.template.disabled = false
+            axis.renderer.ticks.template.length = 12;
+            axis.renderer.ticks.template.strokeOpacity = 1;
+
+            axis.renderer.labels.template.radius = 35;
+            axis.renderer.labels.template.disabled = true;
+            axis.renderer.ticks.template.disabled = true;
+
+            function createLabel(label, deg) {
+                var range = axis.axisRanges.create();
+                range.value = deg;
+                range.grid.disabled = true;
+                range.label.text = label;
             }
-          }
+
+            createLabel("N", 0);
+            createLabel("", 22.5);
+            createLabel("NE", 45);
+            createLabel("", 67.5);
+            createLabel("E", 90);
+            createLabel("", 112.5);
+            createLabel("SE", 135);
+            createLabel("", 157.5);
+            createLabel("S", 180);
+            createLabel("", 202.5);
+            createLabel("SW", 225);
+            createLabel("", 247.5);
+            createLabel("W", 270);
+            createLabel("", 292.5);
+            createLabel("NW", 315);
+            createLabel("", 337.5);
+
+            // hands
+            northHand = chart.hands.push(new am4charts.ClockHand());
+            northHand.radius = am4core.percent(80);
+            northHand.startWidth = 20;
+            northHand.endWidth = 1;
+            northHand.rotationDirection = "clockWise";
+            northHand.pin.disabled = true;
+            northHand.zIndex = 0;
+            northHand.fill = am4core.color("#c00");
+            northHand.stroke = am4core.color("#c00");
+            northHand.value = 0;
+
+            southHand = chart.hands.push(new am4charts.ClockHand());
+            southHand.radius = am4core.percent(80);
+            southHand.startWidth = 20;
+            southHand.endWidth = 1;
+            southHand.rotationDirection = "clockWise";
+            southHand.pin.disabled = true;
+            southHand.zIndex = 0;
+            southHand.fill = am4core.color("#555");
+            southHand.stroke = am4core.color("#555");
+            southHand.value = 180;
+
+        });
+
+        async function fetchImage() {
+            fetch('http://192.168.0.198:8080/photo.jpg')
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    document.querySelector('.image').src = url;
+                })
+                .catch(error => console.error('Error fetching the image:', error));
         }
-      }
-    };
+        setInterval(fetchImage, 53);
 
-    const distanceChart = new Chart(distanceCtx, config);
-    const tempChart = new Chart(tempCtx, { ...config, data: tempData });
-    const hmdChart = new Chart(hmdCtx, { ...config, data: hmdData });
+        let xCounter = 1;
 
-    let ip = '172.18.11.121';
-    let tempe = 30, hmd = 30;
-    function fetchData(path) {
-      fetch(`http://${ip}/${path}`)
-        .then(response => response.json())
-        .then(data => {
-          const currentTime = new Date();
-          const timeLabel = `${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
-          if (path === 'distance') {
-            distanceChart.data.labels.push(timeLabel);
-            distanceChart.data.datasets[0].data.push({ x: xCounter, y: data.distance });
-            distanceChart.update();
-          }
-          else if (path === 'temperature') {
-            tempChart.data.labels.push(timeLabel);
-            tempChart.data.datasets[0].data.push({ x: xCounter, y: data.temperature });
-            hmdChart.data.datasets[0].data.push({ x: xCounter, y: data.humidity });
-            hmdChart.update();
-            tempChart.update();
-            tempe = data.temperature;
-            hmd = data.humidity;
-          }
-          console.log(tempe, hmd);
-          xCounter++;
-        })
-        .catch(error => console.error('Error:', error));
-    }
+        const distanceCtx = document.getElementById('distance-chart').getContext('2d');
+        const tempCtx = document.getElementById('temp-chart').getContext('2d');
+        const hmdCtx = document.getElementById('hmd-chart').getContext('2d');
 
-    setInterval(() => {
-      fetchData('distance');
-      fetchData('temperature');
-      fetchData('imu');
-    }, 1000);
+        const distanceData = {
+            datasets: [{
+                label: 'Distance',
+                data: [],
+                backgroundColor: 'red',
+                borderColor: 'red',
+                showLine: true,
+                fill: false
+            }]
+        };
 
-    FusionCharts.ready(function () {
-      var chart = new FusionCharts({
-        type: 'thermometer',
-        renderAt: 'ther-container',
-        id: 'myThm',
-        width: '5%',
-        height: '50%',
-        dataFormat: 'json',
-        dataSource: {
-          "chart": {
-            "lowerLimit": "0",
-            "upperLimit": "50",
-            "numberSuffix": "°C",
-            "thmFillColor": "#008ee4",
-            "showGaugeBorder": "1",
-            "gaugeBorderColor": "#008ee4",
-            "gaugeBorderThickness": "2",
-            "theme": "umber",//fusion
-            "showvalue": "1"
-          },
-          "value": `${tempe}`,
-        },
-      })
-        .render();
-    });
+        const tempData = {
+            datasets: [{
+                label: 'Temperature',
+                data: [],
+                backgroundColor: 'blue',
+                borderColor: 'blue',
+                showLine: true,
+                fill: false
+            }]
+        };
 
-    FusionCharts.ready(function () {
-      var myChart = new FusionCharts({
-        type: "thermometer",
-        renderAt: "hmd-meter",
-        width: "5%",
-        height: "50%",
-        dataFormat: "json",
-        dataSource: {
-          "chart": {
-            "lowerLimit": "0",
-            "upperLimit": "100",
-            "numberSuffix": "%",
-            "thmFillColor": "#008ee4",
-            "showGaugeBorder": "1",
-            "gaugeBorderColor": "#008ee4",
-            "gaugeBorderThickness": "2",
-            "theme": "umber",
-            "showvalue": "1"
-          },
-          "value": `${hmd}`,
+        const hmdData = {
+            datasets: [{
+                label: 'Humidity',
+                data: [],
+                backgroundColor: 'green',
+                borderColor: 'green',
+                showLine: true,
+                fill: false
+            }]
+        };
 
+        const config = {
+            type: 'line',
+            data: distanceData,
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        },
+                        grid: {
+                            drawOnChartArea: true,
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            lineWidth: 1,
+                            drawTicks: false,
+                            tickLength: 0
+                        },
+                        ticks: {
+                            stepSize: 1,
+                            callback: function (value) { return value; },
+                            precision: 0,
+                            autoSkip: true,
+                            maxRotation: 0,
+                            minRotation: 0
+                        },
+                        beginAtZero: true
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: true,
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            lineWidth: 1,
+                            drawTicks: false,
+                            tickLength: 0
+                        }
+                    }
+                },
+                plugins: {
+                    zoom: {
+                        pan: {
+                            enabled: true,
+                            mode: 'x'
+                        },
+                        zoom: {
+                            enabled: true,
+                            mode: 'x'
+                        }
+                    }
+                }
+            }
+        };
+
+        const distanceChart = new Chart(distanceCtx, config);
+        const tempChart = new Chart(tempCtx, { ...config, data: tempData });
+        const hmdChart = new Chart(hmdCtx, { ...config, data: hmdData });
+
+        let ip = '192.168.0.188';
+
+        async function fetchData(path) {
+            fetch(`http://${ip}/${path}`)
+                .then(response => response.json())
+                .then(data => {
+                    const currentTime = new Date();
+                    const timeLabel = `${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
+                    if (path === 'distance') {
+                        const distanceSlider = document.getElementById('r');
+                        const distanceOutput = document.querySelector('output[for="r"]');
+
+                        distanceSlider.value = data.distance;
+                        distanceOutput.value = data.distance;
+
+                        distanceChart.data.labels.push(timeLabel);
+                        distanceChart.data.datasets[0].data.push({ x: xCounter, y: data.distance });
+                        distanceChart.update();
+                    }
+                    else if (path === 'temperature') {
+                        tempChart.data.labels.push(timeLabel);
+                        tempChart.data.datasets[0].data.push({ x: xCounter, y: data.temperature });
+                        hmdChart.data.labels.push(timeLabel);
+                        hmdChart.data.datasets[0].data.push({ x: xCounter, y: data.humidity });
+                        tempChart.update();
+                        hmdChart.update();
+                    }
+                    xCounter++;
+                })
+                .catch(error => console.error('Error:', error));
         }
-      }).render();
-    });
-    const canvas = document.getElementById('threeD');
 
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
-    const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas });
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        setInterval(() => {
+            fetchData('distance');
+            fetchData('temperature');
+        }, 1000);
 
-    const light = new THREE.AmbientLight(0x404040);
-    scene.add(light);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(5, 5, 5).normalize();
-    scene.add(directionalLight);
+        let ippwm = '192.168.0.199/pwm';
+        let lastSpeedUpdateTime1 = 0;
+        // let prev = {};
 
-    let car;
+        async function fetchpwm() {
+            try {
+                const response = await fetch(`http://${ippwm}`);
+                const data = await response.json();
+                const currentTime = Date.now();
 
-    const loader = new THREE.GLTFLoader();
-    loader.load('car1/scene.gltf', function (gltf) {
-      car = gltf.scene;
-      scene.add(car);
-    }, undefined, function (error) {
-      console.error(error);
-    });
+                const timeLabel = `${new Date(currentTime).getMinutes()}:${new Date(currentTime).getSeconds()}`;
+                
+                // Calculate rpmValue and update speed
+                if (currentTime - lastSpeedUpdateTime1 >= 1000) {
+                    const rpmValue = (data.pwm / 1024) * 400 || 0;
+                    document.getElementById('speed').textContent = `Speed: ${rpmValue} rpm`;
+                    lastSpeedUpdateTime1 = currentTime;
+                }
+                
+                // Update prev for next use
+                // prev = data;
 
-    camera.position.z = 5;
+            } catch (error) {
+                console.error('Error:', error);
 
-    function fetchThree() {
-      return fetch(`http://${ip}/imu`)
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-          return data;
-        })
-        .catch(error => console.error('Error fetching data:', error));
-    }
-
-
-    function animate() {
-      requestAnimationFrame(animate);
-      fetchThree().then(data => {
-        if (car) {
-
-
-          // car.rotation.x = data.ax * 0.175;
-          car.rotation.y = data.ay * 0.175;
-          // car.glRotatef(data.az * 0.175, 0, 0, 1);
-          // car.rotation.z = (data.az - 10) * 0.05;
+                // Use previous data if an error occurs
+                const currentTime = Date.now();
+                if (currentTime - lastSpeedUpdateTime >= 1000) {
+                    const rpmValue = (prev.pwm / 1024) * 400 || 0;
+                    document.getElementById('speed').textContent = `Speed: ${rpmValue} rpm`;
+                    lastSpeedUpdateTime = currentTime;
+                }
+            }
         }
-        renderer.render(scene, camera);
-      }).catch(error => {
-        console.error('Error fetching data:', error);
-      });
-    }
 
-    animate();
+        setInterval(() => {
+            fetchpwm();
+        }, 1000);
 
-  </script>
+        const canvas = document.getElementById('threeD');
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+        const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas });
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+        const light = new THREE.AmbientLight(0x404040);
+        scene.add(light);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 5, 5).normalize();
+        scene.add(directionalLight);
+
+        let car;
+
+        const loader = new THREE.GLTFLoader();
+        loader.load('car.gltf', function (gltf) {
+            car = gltf.scene;
+            car.scale.set(0.1, 0.1, 0.1);
+            scene.add(car);
+        }, undefined, function (error) {
+            console.error(error);
+        });
+
+        camera.position.z = 5;
+        let lastSpeedUpdateTime = 0;
+        async function fetchThree() {
+            var prev;
+            try {
+                const response = await fetch('http://192.168.0.198:8080/sensors.json');
+                const data = await response.json();
+                prev = data;
+                return data;
+            } catch (error) {
+                // console.error('Error fetching data:', error);
+                return prev;
+            }
+        }
+
+        function calculateYaw(ax, ay) {
+            return Math.atan2(ay, ax);
+        }
+
+        function calculatePitch(ax, ay, az) {
+            return Math.atan2(ax, Math.sqrt(ay * ay + az * az));
+        }
+
+        function calculateRoll(ax, ay, az) {
+            return Math.atan2(ay, Math.sqrt(ax * ax + az * az));
+        }
+
+        async function animate() {
+            requestAnimationFrame(animate);
+
+            const data = await fetchThree();
+            if (data && car) {
+                const ax = data.accel.data[0][1][0];
+                const ay = data.accel.data[0][1][1];
+                const az = data.accel.data[0][1][2];
+
+                const gx = data.gyro.data[0][1][0];
+                const gz = data.gyro.data[0][1][2];
+
+                const yaw = calculateYaw(ax, ay);
+                const pitch = calculatePitch(ax, ay, az);
+                const roll = calculateRoll(ax, ay, az);
+
+                car.rotation.y = yaw;
+                car.rotation.x = gx;
+                car.rotation.z = gz;
+
+                let latestMagData = data.mag.data[data.mag.data.length - 1][1];
+                let heading = calculateHeading(latestMagData);
+
+                chart.animate({ property: "startAngle", to: -heading }, 1000, am4core.ease.cubicOut);
+                chart.animate({ property: "endAngle", to: 360 - heading }, 1000, am4core.ease.cubicOut);
+
+                northHand.animate({ property: "value", to: -90 - heading }, 1000, am4core.ease.cubicOut);
+                southHand.animate({ property: "value", to: 90 - heading }, 1000, am4core.ease.cubicOut);
+            }
+
+            renderer.render(scene, camera);
+        }
+        setInterval(() => {
+            animate();
+        }, 1000);
+        
+    </script>
 </body>
 
 </html>

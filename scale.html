@@ -1,79 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Scale</title>
+    <title>Distance Slider with Enhanced Colors</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        * {
             margin: 0;
-            background-color: #f0f0f0;
+            padding: 0;
+            color: inherit;
+            font: inherit;
         }
 
-        .scale-container {
-            display: flex;
-            align-items: center;
-            position: relative;
+        html,
+        body,
+        form,
+        form * {
+            display: grid;
         }
 
-        .ruler {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            width: 100%;
-            height: 20px; /* Adjust based on your ruler image height */
-            background-image: url('image.png'); /* Update this with your image path */
-            background-size: cover;
-            pointer-events: none; /* Allows the slider to still be interacted with */
+        html {
+            height: 100%;
         }
 
-        .slider {
-            width: 300px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: transparent;
-            position: relative;
-            z-index: 1;
+        .js {
+            --js: 1;
         }
 
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #000;
+        body,
+        datalist {
+            place-content: center;
+        }
+
+        body {
+            font: 1em/1.25 ubuntu, sans-serif;
+        }
+
+        form,
+        option {
+            place-items: center;
+        }
+
+        form {
+            --extra: 0;
+            --large: 0;
+            --not-large: calc(1 - var(--large));
+            --small: 0;
+            --not-small: calc(1 - var(--small));
+            --track-w: min(25em, 100vw - 2 * 1.75em);
+            overflow-x: hidden;
+            padding: 0.875em;
+            background: hsla(0, 0%, 91%, 1);
+            filter: grayscale(0);
+            transition: 0.35s;
+        }
+
+        @media (min-width: 28.5em) {
+            form {
+                --extra: 1;
+            }
+        }
+
+        @media (min-width: 320px) {
+            form {
+                --large: 1;
+            }
+        }
+
+        @media (max-width: 220px) {
+            form {
+                --small: 1;
+            }
+        }
+
+        label {
+            font-size: 137.5%;
+        }
+
+        [for] {
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            width: calc(var(--track-w) + 1.75em);
+            background: linear-gradient(90deg, #6a5acd, #00bfff, #00ff7f, #ff8c00, #dc143c) 50%/var(--track-w) 0.375em no-repeat;
             cursor: pointer;
-            border-radius: 50%;
+            background-color: transparent;
         }
 
-        .scale-value {
-            font-size: 1.5em;
-            width: 50px;
-            text-align: center;
-            margin-left: 15px;
+        input::-webkit-slider-runnable-track,
+        input::-webkit-slider-thumb,
+        input[type="range"] {
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            margin-top: -0.35em;
+            border: none;
+            width: 1.75em;
+            height: 1.75em;
+            background: currentcolor;
+            --poly: polygon(50% 100%, 6.6987298108% 25%, 93.3012701892% 25%);
+            -webkit-clip-path: var(--poly);
+            clip-path: var(--poly);
+            cursor: ew-resize;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            margin-top: -0.35em;
+            border: none;
+            width: 1.75em;
+            height: 1.75em;
+            background: currentcolor;
+            --poly: polygon(50% 100%, 6.6987298108% 25%, 93.3012701892% 25%);
+            -webkit-clip-path: var(--poly);
+            clip-path: var(--poly);
+            cursor: ew-resize;
+        }
+
+        input[type="range"]:focus {
+            outline: none;
+        }
+
+        input[type="range"] + output {
+            --rng: calc(var(--max) - var(--min));
+            --pos: calc((var(--val) - var(--min)) / var(--rng) * var(--track-w));
+            display: var(--js, none);
+            grid-row: 2;
+            justify-self: start;
+            transform: translate(calc(0.5 * 1.75em + var(--pos) - 50%));
+            counter-reset: val var(--val);
+        }
+
+        input[type="range"] + output::after {
+            content: counter(val);
+        }
+
+        datalist {
+            --track-u: calc(var(--track-w) / var(--n));
+            grid-auto-flow: column;
+            width: calc(var(--track-w) + 1px);
+            box-shadow: inset 0 1px currentcolor;
+            background: linear-gradient(90deg, currentcolor 1px, transparent 0) repeat-x;
+            background-size: calc(var(--track-u) / 5) calc(var(--extra) * 0.5 * 0.875em);
+        }
+
+        option {
+            --m: calc(var(--large));
+            width: calc(var(--m) * var(--track-u));
+            transform-origin: 50% 0;
+            transform: scale(min(1, var(--m)));
+            transition: transform 0.35s;
+        }
+
+        option:nth-child(odd) {
+            --m: calc(var(--large) + 2 * var(--not-large) * var(--not-small));
+        }
+
+        option:first-child,
+        option:last-child {
+            --m: calc(var(--large) + var(--not-large) * (2 * var(--not-small) + 0.5 * var(--n) * var(--small)));
+        }
+
+        option.mid {
+            --m: calc(var(--large) + var(--not-large) * 0.5 * var(--n) * var(--small));
+        }
+
+        option::before {
+            width: 1px;
+            height: 0.875em;
+            background: currentcolor;
+            content: "";
         }
     </style>
 </head>
+
 <body>
-    <div class="scale-container">
-        <div class="ruler"></div>
-        <input type="range" id="scale" min="0" max="100" value="50" class="slider">
-        <div id="scale-value" class="scale-value">50</div>
-    </div>
+
+    <form style="--min: 0; --val: 180; --max: 360; --n: 12">
+        <label for="r">Distance (0-360)cm</label>
+        <input id="r" type="range" value="180" min="0" max="360" list="l" />
+        <output for="r"></output>
+        <datalist id="l">
+            <option>0</option>
+            <option>30</option>
+            <option>60</option>
+            <option>90</option>
+            <option>120</option>
+            <option>150</option>
+            <option class="mid">180</option>
+            <option>210</option>
+            <option>240</option>
+            <option>270</option>
+            <option>300</option>
+            <option>330</option>
+            <option>360</option>
+        </datalist>
+
+        <label for="distanceInput">Set Distance:</label>
+        <input id="distanceInput" type="number" min="0" max="360" value="180" />
+
+    </form>
 
     <script>
-        const scale = document.getElementById('scale');
-        const scaleValue = document.getElementById('scale-value');
+        document.documentElement.classList.add('js');
 
-        scale.addEventListener('input', () => {
-            scaleValue.textContent = scale.value;
+        const rangeInput = document.getElementById('r');
+        const output = document.querySelector('output[for="r"]');
+        const distanceInput = document.getElementById('distanceInput');
+
+        function updateRange(value) {
+            rangeInput.value = value;
+            rangeInput.parentNode.style.setProperty('--val', +value);
+        }
+
+        rangeInput.addEventListener('input', e => {
+            updateRange(e.target.value);
+            distanceInput.value = e.target.value;
         });
+
+        distanceInput.addEventListener('input', e => {
+            const value = e.target.value;
+            updateRange(value);
+        });
+
+        updateRange(rangeInput.value);
     </script>
 </body>
+
 </html>

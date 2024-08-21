@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Control</title>
+  <style>
+    .control-button {
+      display: block;
+      width: 100px;
+      height: 50px;
+      margin: 10px auto;
+      font-size: 18px;
+    }
+
+    .control-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .speed-slider {
+      width: 80%;
+      margin: 20px auto;
+    }
+
+    .middle {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .slider {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="control-container">
+    <div><button class="control-button" onclick="sendCommand('F')">Run</button></div>
+    <div class="middle">
+      <button class="control-button" onclick="sendCommand('L')">Left</button>
+      <button class="control-button" onclick="sendCommand('S')">Stop</button>
+      <button class="control-button" onclick="sendCommand('R')">Right</button>
+    </div>
+    <div>
+      <button class="control-button" onclick="sendCommand('B')">Back</button>
+    </div>
+    <div class="slider">
+      <div class="speed-slider">
+        <label for="speed">Speed:</label>
+        <input type="range" id="speed" name="speed" min="1" max="100" value="5" oninput="changeSpeed(this.value)">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function sendCommand(direction) {
+      fetch(`http://192.168.0.197/move?dir=${direction}`)
+        .then(response => response.text())
+        .then(data => console.log(data))
+        .catch(error => console.error(error))
+    }
+
+    function changeSpeed(speed) {
+      fetch(`http://192.168.0.197/speed?value=${speed}`)
+        .then(response => response.text())
+        .then(data => console.log(data))
+        .catch(error => console.error(error));
+    }
+  </script>
+</body>
+
+</html>
