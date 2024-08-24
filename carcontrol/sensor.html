@@ -419,7 +419,7 @@
         });
 
         async function fetchImage() {
-            fetch('http://192.168.0.198:8080/photo.jpg')
+            fetch('http://192.168.253.33:8080/photo.jpg')
                 .then(response => response.blob())
                 .then(blob => {
                     const url = URL.createObjectURL(blob);
@@ -529,7 +529,7 @@
         const tempChart = new Chart(tempCtx, { ...config, data: tempData });
         const hmdChart = new Chart(hmdCtx, { ...config, data: hmdData });
 
-        let ip = '192.168.0.188';
+        let ip = '192.168.253.158';
 
         async function fetchData(path) {
             fetch(`http://${ip}/${path}`)
@@ -566,7 +566,7 @@
             fetchData('temperature');
         }, 1000);
 
-        let ippwm = '192.168.0.199/pwm';
+        let ippwm = '192.168.253.42/pwm';
         let lastSpeedUpdateTime1 = 0;
         // let prev = {};
 
@@ -635,7 +635,7 @@
         async function fetchThree() {
             var prev;
             try {
-                const response = await fetch('http://192.168.0.198:8080/sensors.json');
+                const response = await fetch('http://172.18.0.208:8080/sensors.json');
                 const data = await response.json();
                 prev = data;
                 return data;

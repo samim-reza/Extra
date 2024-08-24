@@ -1,69 +1,233 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Servo Control</title>
-<style>
-html { 
-    font-family: Helvetica; 
-    display: inline-block; 
-    margin: 0px auto; 
-    text-align: center;
-}
-body {
-    margin-top: 50px;
-}
-h1 {
-    color: #444444;
-    margin: 50px auto 30px;
-}
-h3 {
-    color: #444444;
-    margin-bottom: 50px;
-}
-.slider {
-    width: 300px;
-    margin: 15px auto;
-}
-button {
-    margin: 10px;
-    padding: 10px;
-    font-size: 16px;
-}
-</style>
-<script>
-function updateServo(servo, value) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "http://172.18.11.112/updateServo?" + servo + "=" + value, true);
-    xhr.send();
-}
-function setPosition(position) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "http://172.18.11.112/setPosition?position=" + position, true);
-    xhr.send();
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-container{
+            width: 50%;
+            height: 50%;
+            /* border: 1px solid black; */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .row-header{
+            height: 10%;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            /* border: 1px solid blue ; */
+        }
+
+        .row-container{
+            height: 26%;
+            width: 90%;
+            /* border: 1px solid  rgb(11, 224, 240); */
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+
+        }
+
+        .button-container{
+            display: flex;
+            flex-direction: row;
+            width: 23%;
+            height: 95%;
+            /* border: 1px solid palevioletred; */
+        }
+
+        .long-button-container{
+            width: 47%;
+            height: 85%;
+            /* border: 1px solid rgb(53, 87, 201); */
+        }
+        
+        .image-button img{
+            width: 80px;
+            height: 80px;
+        }
+
+        .image-button {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+            border-color: #007bff;
+        }
+        .image-button:active {
+            transform: translateY(0);
+            background-color: #f5f2f2;
+        }
+        .arrows {
+            font-size: 30px;
+        }
+
+        .left-right-box{
+            display: flex;
+            flex-direction: column;
+            width: 76%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            /* border: 1px solid rgb(53, 87, 201); */
+        }
+
+        .horizontal-container{
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            /* border: 1px solid rgb(53, 87, 201); */
+        }
+
+        .big-container{
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            height: 100%;
+            justify-content: space-around;
+            align-items: center;
+            /* border: 1px solid rgb(53, 87, 201); */
+        }
+
+        .header{
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+            width: 25%;
+            justify-content: space-around;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
-<h1>ESP8266 Servo Control</h1>
-<h3>Using Access Point(AP) Mode</h3>
+    <div class="main-container">
+        <div class="row-header">
+            <div class="header">Autonomus Movement</div>
+            <div class="header">Vertical Movemnet</div>
+            <div class="header">Linear Movement</div>
+            <div class="header">Gripper Clutch</div>
+        </div>
+        <div class="row-container">
+            <div class="button-container"><button class="image-button" id="0-degree"><div style="-webkit-transform: rotate(-90deg);">0 degrees</div><img src="up.png"></button></div>
+            <div class="button-container"><button class="image-button" id="up"><div style="-webkit-transform: rotate(-90deg);">Up</div><img src="up.png"></button></div>
+            <div class="button-container"><button class="image-button" id="front"><div style="-webkit-transform: rotate(-90deg);">Front</div><img src="front.png"></button></div>
+            <div class="button-container"><button class="image-button" id="open"><div style="-webkit-transform: rotate(-90deg);">Open</div><img src="open.png" alt="open"></button></div>
+        </div>
+        <div class="row-container">
+            <div class="button-container"><button class="image-button" id="40-degree"><div style="-webkit-transform: rotate(-90deg);">40 degrees</div><img src="middle.png"></button></div>
+            <div class="button-container"> <button class="image-button" id="down"><div style="-webkit-transform: rotate(-90deg);">Down</div><img src="down.png"></button></div>
+            <div class="button-container"><button class="image-button" id="back"><div style="-webkit-transform: rotate(-90deg);">Back</div><img src="back.png"></button></div>
+            <div class="button-container"><button class="image-button" id="close"><div style="-webkit-transform: rotate(-90deg);">Close</div><img src="close.png" alt="close"></button></div>
+        </div>
+        <div class="row-container">
+            <div class="button-container"><button class="image-button" id="80-degree"><div style="-webkit-transform: rotate(-90deg);">80 degrees</div><img src="down.png"></button></div>
 
-<p>Up-Down</p>
-<input type="range" min="{{upDownMin}}" max="{{upDownMax}}" value="{{upDownPos}}" class="slider" id="upDown" oninput="updateServo('upDown', this.value)">
+            <div class="left-right-box">
+                <div class="horizontal-container">Horizontal Movement</div>
+                <div class="big-container">
+                    <div class="long-button-container"><button class="image-button" id="left"><div >Left</div><img src="left.png"></button></div>
+                    <div class="long-button-container"><button class="image-button" id="right"><img src="right.png"><div>Right</div></button></div>
+                </div>
+            </div>
 
-<p>Open-Close</p>
-<input type="range" min="{{openCloseMin}}" max="{{openCloseMax}}" value="{{openClosePos}}" class="slider" id="openClose" oninput="updateServo('openClose', this.value)">
+        </div>
+    </div>
+    <script>
+        const webSocket = new WebSocket('ws://' + '192.168.0.104'+ ':81/');
 
-<p>Left-Right</p>
-<input type="range" min="0" max="360" value="{{leftRightPos}}" class="slider" id="leftRight" oninput="updateServo('leftRight', this.value)">
+        const KNOB_SPEED = 80;
 
-<p>Forward-Backward</p>
-<input type="range" min="{{forwardBackwardMin}}" max="{{forwardBackwardMax}}" value="{{forwardBackwardPos}}" class="slider" id="forwardBackward" oninput="updateServo('forwardBackward', this.value)">
+        let intervalId;
 
-<br>
-<button onclick="setPosition('lowest')">Lowest</button>
-<button onclick="setPosition('highest')">Highest</button>
-<button onclick="setPosition('middle')">Middle</button>
+        const positons = JSON.parse(localStorage.getItem('positions')) || {
+            openClose: 90,
+            upDown: 80,
+            leftRight: 180,
+            forwardBackward: 100
+        }
 
+        const minMaxRanges = {
+            openClose: [0, 95],
+            upDown: [0, 80],
+            forwardBackward: [0, 100],
+            leftRight: [0, 180]
+        }
+
+        function executeCommand(type, action) {
+            // Actions
+            let value = positons[type];
+            if ('increment' === action) {
+                value++;
+            } else if ('decrement' === action) {
+                value--;
+            } else if (Number.isInteger(action)) {
+                value = action;
+            }
+
+            // Min Max validation
+            if (value < minMaxRanges[type]?.[0]) {
+                value = minMaxRanges[type]?.[0];
+            } else if (value > minMaxRanges[type]?.[1]) {
+                value = minMaxRanges[type]?.[1];
+            }
+
+            positons[type] = value;
+
+            // Persist the value
+            localStorage.setItem('positions', JSON.stringify(positons));
+
+            return type + ":" + value;
+        }
+
+        function createMouseDownHandler(id, type, action) {
+            document.getElementById(id).addEventListener('mousedown', () => intervalId = setInterval(() => webSocket.send(executeCommand(type, action)), KNOB_SPEED));
+            document.getElementById(id).addEventListener('mouseup', () => clearInterval(intervalId));
+            document.getElementById(id).addEventListener('mouseleave', () => clearInterval(intervalId));
+        }
+
+        createMouseDownHandler('up', 'upDown', 'increment');
+        createMouseDownHandler('down', 'upDown', 'decrement');
+        createMouseDownHandler('left', 'leftRight', 'increment');
+        createMouseDownHandler('right', 'leftRight', 'decrement');
+        createMouseDownHandler('front', 'forwardBackward', 'increment');
+        createMouseDownHandler('back', 'forwardBackward', 'decrement');
+        createMouseDownHandler('open', 'openClose', 'increment');
+        createMouseDownHandler('close', 'openClose', 'decrement');
+        createMouseDownHandler('0-degree', 'lowest', 0);
+        createMouseDownHandler('40-degree', 'middle', 40);
+        createMouseDownHandler('80-degree', 'highest', 80);
+
+    </script>
 </body>
 </html>

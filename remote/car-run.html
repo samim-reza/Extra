@@ -62,14 +62,14 @@
 
   <script>
     function sendCommand(direction) {
-      fetch(`http://192.168.0.197/move?dir=${direction}`)
+      fetch(`http://172.18.1.108/move?dir=${direction}`)
         .then(response => response.text())
         .then(data => console.log(data))
         .catch(error => console.error(error))
     }
 
     function changeSpeed(speed) {
-      fetch(`http://192.168.0.197/speed?value=${speed}`)
+      fetch(`http://172.18.1.108/speed?value=${speed}`)
         .then(response => response.text())
         .then(data => console.log(data))
         .catch(error => console.error(error));

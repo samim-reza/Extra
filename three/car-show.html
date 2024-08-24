@@ -44,7 +44,7 @@
         const loader = new THREE.GLTFLoader();
         loader.load('car.gltf', function (gltf) {
             car = gltf.scene;
-            car.scale.set(0.1, 0.1, 0.1);
+            car.scale.set(0.05, 0.05, 0.05);
             scene.add(car);
         }, undefined, function (error) {
             console.error(error);
@@ -53,13 +53,11 @@
         async function fetchThree() {
             var prev;
             try {
-                const response = await fetch('http://192.168.0.100:8080/sensors.json');
+                const response = await fetch('http://192.168.0.197:8080/sensors.json');
                 const data = await response.json();
-                // console.log(data.accel.data.length);
                 prev = data;
                 return data;
             } catch (error) {
-                // console.error('Error fetching data:', error);
                 return prev;
             }
         }
