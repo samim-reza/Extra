@@ -50,7 +50,7 @@
 
 <body class="noselect" align="center" style="background-color:white">
 
-    <h2 style="color: teal;text-align:center;">Wi-Fi &#128663; Control</h2>
+    <h2 style="color: teal;text-align:center;">Rover Control</h2>
 
     <table id="mainTable" style="width:400px;margin:auto;table-layout:fixed" cellspacing="10">
         <tr>
@@ -87,9 +87,10 @@
         var speedvar = 10;
         document.getElementById("speedvar").innerHTML = speedvar;
 
+        let ip = '192.168.151.42';
         function onTouchStart(direction) {
             console.log("Start moving:", direction);
-            fetch(`http://192.168.253.42/move?dir=${direction}`)
+            fetch(`http://${ip}/move?dir=${direction}`)
                 .then(response => response.text())
                 .then(data => console.log(data))
                 .catch(error => console.error(error));
@@ -97,14 +98,14 @@
 
         function onTouchEnd() {
             console.log("Stop moving");
-            fetch(`http://192.168.253.42/move?dir=S`)
+            fetch(`http://${ip}/move?dir=S`)
                 .then(response => response.text())
                 .then(data => console.log(data))
                 .catch(error => console.error(error));
         }
 
         function changeSpeed(speed) {
-            fetch(`http://192.168.253.42/speed?value=${speed}`)
+            fetch(`http://${ip}/speed?value=${speed}`)
                 .then(response => response.text())
                 .then(data => console.log(data))
                 .catch(error => console.error(error));
@@ -113,12 +114,18 @@
 
         function increaseSpeed() {
             speedvar += 10;
+            if (speedvar >= 70) {
+                speedvar = 70;
+            }
             document.getElementById("speedvar").innerHTML = speedvar;
             changeSpeed(speedvar);
         }
 
         function decreaseSpeed() {
             speedvar -= 10;
+            if (speedvar <= 10) {
+                speedvar = 10;
+            }
             document.getElementById("speedvar").innerHTML = speedvar;
             changeSpeed(speedvar);
         }

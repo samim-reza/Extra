@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graph Paper with Chart.js Hover Effect</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+    #myChart {
+      max-width: 800px;
+      max-height: 800px;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<canvas id="myChart"></canvas>
+
+<script>
+  const ctx = document.getElementById('myChart').getContext('2d');
+
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+      datasets: [{
+        label: 'Sample Data',
+        data: [],
+        borderColor: 'rgba(0, 0, 255, 0.5)',
+        fill: false,
+        tension: 0.1,
+        pointRadius: 0
+      }]
+    },
+    options: {
+      scales: {
+        x: {
+          min: 0,
+          max: 10,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.2)',
+            lineWidth: 1,
+          },
+          ticks: {
+            stepSize: 1,
+            color: 'black'
+          },
+        },
+        y: {
+          min: 0,
+          max: 10,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.2)', // Vertical lines
+            lineWidth: 1,
+          },
+          ticks: {
+            stepSize: 1,
+            color: 'black'
+          },
+        }
+      },
+      plugins: {
+        legend: {
+          display: false, // Hides the legend
+        },
+      },
+      hover: {
+        mode: 'nearest',
+        intersect: false,
+        onHover: (event, chartElement) => {
+          if (chartElement.length) {
+            ctx.canvas.style.cursor = 'pointer'; // Change the cursor to pointer on hover
+          } else {
+            ctx.canvas.style.cursor = 'default';
+          }
+        }
+      },
+      onHover: function(event, elements) {
+        if (elements.length > 0) {
+          const chartArea = chart.chartArea;
+          const x = event.x;
+          const y = event.y;
+
+          ctx.clearRect(0, 0, chart.width, chart.height);
+          chart.update();
+
+          ctx.fillStyle = 'rgba(255, 0, 0, 0.1)'; // Highlight color (light red)
+          ctx.fillRect(
+            chartArea.left,
+            chartArea.top,
+            chartArea.right - chartArea.left,
+            chartArea.bottom - chartArea.top
+          );
+
+          const element = elements[0].element;
+          ctx.fillRect(
+            element.x - chart.scales.x._length / 10,
+            chartArea.top,
+            chart.scales.x._length / 10,
+            chartArea.bottom - chartArea.top
+          );
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

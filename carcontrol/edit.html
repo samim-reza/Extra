@@ -418,17 +418,6 @@
 
         });
 
-        async function fetchImage() {
-            fetch('http://192.168.151.33:8080/photo.jpg')
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = URL.createObjectURL(blob);
-                    document.querySelector('.image').src = url;
-                })
-                .catch(error => console.error('Error fetching the image:', error));
-        }
-        setInterval(fetchImage, 53);
-
         let xCounter = 1;
 
         const distanceCtx = document.getElementById('distance-chart').getContext('2d');
@@ -529,7 +518,18 @@
         const tempChart = new Chart(tempCtx, { ...config, data: tempData });
         const hmdChart = new Chart(hmdCtx, { ...config, data: hmdData });
 
-        let ip = '192.168.151.137';
+        let ip = '192.168.134.137';
+
+        async function fetchImage() {
+            fetch(`http://${ip}`)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    document.querySelector('.image').src = url;
+                })
+                .catch(error => console.error('Error fetching the image:', error));
+        }
+        setInterval(fetchImage, 53);
 
         async function fetchData(path) {
             fetch(`http://${ip}/${path}`)
@@ -543,7 +543,7 @@
 
                         distanceSlider.value = data.distance;
                         distanceOutput.value = data.distance;
-                        
+
                         distanceChart.data.labels.push(timeLabel);
                         distanceChart.data.datasets[0].data.push({ x: xCounter, y: data.distance });
                         distanceChart.update();
@@ -566,13 +566,11 @@
             fetchData('temperature');
         }, 1000);
 
-        let ippwm = '192.168.151.42/pwm';
         let lastSpeedUpdateTime1 = 0;
-        // let prev = {};
 
         async function fetchpwm() {
             try {
-                const response = await fetch(`http://${ippwm}`);
+                const response = await fetch(`http://${ip}`);
                 const data = await response.json();
                 const currentTime = Date.now();
 
@@ -641,14 +639,14 @@
         // Fetch sensor data
         async function fetchThree() {
             try {
-                const response = await fetch('http://10.146.206.226:8080/sensors.json');
+                const response = await fetch(`http://${ip}`);
                 return await response.json();
             } catch (error) {
                 console.error('Error fetching data:', error);
                 return null;
             }
         }
-        
+
         // Calculate yaw, pitch, and roll
         function calculateYaw(ax, ay) {
             return Math.atan2(ay, ax);

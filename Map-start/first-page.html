@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Paper</title>
+    <style>
+        body {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .graph-paper {
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+            width: 40vw;
+            border: 2px solid black;
+            /* position: relative; */
+        }
+
+        .row {
+            display: flex;
+            flex-grow: 1;
+        }
+
+        .cell {
+            flex-grow: 1;
+            border: 1px solid #ccc;
+            position: relative;
+        }
+
+        .red-dot {
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transition: top 0.5s, left 0.5s;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="graph-paper" id="graph-paper">
+        <div class="row">
+            <div class="cell" id="0-0">
+                <div class="red-dot" id="red-dot"></div>
+            </div>
+            <div class="cell" id="0-1"></div>
+            <div class="cell" id="0-2"></div>
+            <div class="cell" id="0-3"></div>
+            <div class="cell" id="0-4"></div>
+            <div class="cell" id="0-5"></div>
+            <div class="cell" id="0-6"></div>
+            <div class="cell" id="0-7"></div>
+            <div class="cell" id="0-8"></div>
+            <div class="cell" id="0-9"></div>
+        </div>
+        <div class="row">
+            <div class="cell" id="1-0"></div>
+            <div class="cell" id="1-1"></div>
+            <div class="cell" id="1-2"></div>
+            <div class="cell" id="1-3"></div>
+            <div class="cell" id="1-4"></div>
+            <div class="cell" id="1-5"></div>
+            <div class="cell" id="1-6"></div>
+            <div class="cell" id="1-7"></div>
+            <div class="cell" id="1-8"></div>
+            <div class="cell" id="1-9"></div>
+        </div>
+        <div class="row">
+            <div class="cell" id="2-0"></div>
+            <div class="cell" id="2-1"></div>
+            <div class="cell" id="2-2"></div>
+            <div class="cell" id="2-3"></div>
+            <div class="cell" id="2-4"></div>
+            <div class="cell" id="2-5"></div>
+            <div class="cell" id="2-6"></div>
+            <div class="cell" id="2-7"></div>
+            <div class="cell" id="2-8"></div>
+            <div class="cell" id="2-9"></div>
+        </div>
+        <div class="row">
+            <div class="cell" id="3-0"></div>
+            <div class="cell" id="3-1"></div>
+            <div class="cell" id="3-2"></div>
+            <div class="cell" id="3-3"></div>
+            <div class="cell" id="3-4"></div>
+            <div class="cell" id="3-5"></div>
+            <div class="cell" id="3-6"></div>
+            <div class="cell" id="3-7"></div>
+            <div class="cell" id="3-8"></div>
+            <div class="cell" id="3-9"></div>
+        </div>
+        <div class="row">
+            <div class="cell" id="4-0"></div>
+            <div class="cell" id="4-1"></div>
+            <div class="cell" id="4-2"></div>
+            <div class="cell" id="4-3"></div>
+            <div class="cell" id="4-4"></div>
+            <div class="cell" id="4-5"></div>
+            <div class="cell" id="4-6"></div>
+            <div class="cell" id="4-7"></div>
+            <div class="cell" id="4-8"></div>
+            <div class="cell" id="4-9"></div>
+        </div>
+        <div class="row">
+            <div class="cell" id="5-0"></div>
+            <div class="cell" id="5-1"></div>
+            <div class="cell" id="5-2"></div>
+            <div class="cell" id="5-3"></div>
+            <div class="cell" id="5-4"></div>
+            <div class="cell" id="5-5"></div>
+            <div class="cell" id="5-6"></div>
+            <div class="cell" id="5-7"></div>
+            <div class="cell" id="5-8"></div>
+            <div class="cell" id="5-9"></div>
+        </div>
+        <div class="row">
+            <div class="cell" id="6-0"></div>
+            <div class="cell" id="6-1"></div>
+            <div class="cell" id="6-2"></div>
+            <div class="cell" id="6-3"></div>
+            <div class="cell" id="6-4"></div>
+            <div class="cell" id="6-5"></div>
+            <div class="cell" id="6-6"></div>
+            <div class="cell" id="6-7"></div>
+            <div class="cell" id="6-8"></div>
+            <div class="cell" id="6-9"></div>
+        </div>
+        <div class="row">
+            <div class="cell" id="7-0"></div>
+            <div class="cell" id="7-1"></div>
+            <div class="cell" id="7-2"></div>
+            <div class="cell" id="7-3"></div>
+            <div class="cell" id="7-4"></div>
+            <div class="cell" id="7-5"></div>
+            <div class="cell" id="7-6"></div>
+            <div class="cell" id="7-7"></div>
+            <div class="cell" id="7-8"></div>
+            <div class="cell" id="7-9"></div>
+        </div>
+        <div class="row">
+            <div class="cell" id="8-0"></div>
+            <div class="cell" id="8-1"></div>
+            <div class="cell" id="8-2"></div>
+            <div class="cell" id="8-3"></div>
+            <div class="cell" id="8-4"></div>
+            <div class="cell" id="8-5"></div>
+            <div class="cell" id="8-6"></div>
+            <div class="cell" id="8-7"></div>
+            <div class="cell" id="8-8"></div>
+            <div class="cell" id="8-9"></div>
+        </div>
+        <div class="row">
+            <div class="cell" id="9-0"></div>
+            <div class="cell" id="9-1"></div>
+            <div class="cell" id="9-2"></div>
+            <div class="cell" id="9-3"></div>
+            <div class="cell" id="9-4"></div>
+            <div class="cell" id="9-5"></div>
+            <div class="cell" id="9-6"></div>
+            <div class="cell" id="9-7"></div>
+            <div class="cell" id="9-8"></div>
+            <div class="cell" id="9-9"></div>
+        </div>
+    </div>
+
+
+    <script>
+        const cells = document.querySelectorAll('.cell');
+        const redDot = document.getElementById('red-dot');
+        const graphPaper = document.getElementById('graph-paper');
+
+        let previousIdx = 0;
+        let previousIdy = 0;
+        //4 wall A,B,C,D, initially it will face wall A
+        let wall = 'A';
+        cells.forEach(cell => {
+            cell.addEventListener('click', (event) => {
+                const cellRect = event.target.getBoundingClientRect();
+                const paperRect = graphPaper.getBoundingClientRect();
+
+                const [idx, idy] = event.target.id.split('-');
+
+                console.log(`Previous position: idx=${previousIdx}, idy=${previousIdy}`);
+                console.log(`New position: idx=${idx}, idy=${idy}`);
+
+                const newLeft = cellRect.left - paperRect.left + (cellRect.width / 2) - (redDot.offsetWidth / 2);
+                const newTop = cellRect.top - paperRect.top + (cellRect.height / 2) - (redDot.offsetHeight / 2);
+
+                redDot.style.left = `${newLeft}px`;
+
+                for (let i = 0; i <= 9; i++) {
+                    for (let j = 0; j <= 9; j++) {
+                        document.getElementById(`${i}-${j}`).style.backgroundColor = 'white';
+                    }
+                }
+
+                if (previousIdy < idy) {
+                    for (let i = previousIdy; i <= idy; i++) {
+                        document.getElementById(`${previousIdx}-${i}`).style.backgroundColor = 'rgb(219, 156, 156)';
+
+                    }
+                }
+                else {
+                    for (let i = idy; i <= previousIdy; i++) {
+                        document.getElementById(`${previousIdx}-${i}`).style.backgroundColor = 'rgb(219, 156, 156)';
+
+                    }
+                }
+                if (previousIdx < idx) {
+                    for (let i = previousIdx; i <= idx; i++) {
+                        document.getElementById(`${i}-${idy}`).style.backgroundColor = 'rgb(219, 156, 156)';
+
+                    }
+                }
+                else {
+                    for (let i = idx; i <= previousIdx; i++) {
+                        document.getElementById(`${i}-${idy}`).style.backgroundColor = 'rgb(219, 156, 156)';
+
+                    }
+                }
+
+                setTimeout(() => {
+                    redDot.style.top = `${newTop}px`;
+                }, 500);
+
+                if(wall === 'B')
+                {
+                    if(idy>previousIdy && idx>previousIdx){
+                        //rotate 90 degree left
+                        //move idy-prevoiusIdy times*pulse
+                        //rotate 90 degree right
+                        //move idx-previousIdx times*pulse
+                    }
+                    else if(idy<previousIdy && idx<previousIdx){
+                        //rotate 90 degree right
+                        //move previousIdy-idy times*pulse
+                        //rotate 90 degree right
+                        //move previousIdx-idx times*pulse
+                        wall='D'
+                    }
+                    if(idy>previousIdy && idx<previousIdx){
+                        //rotate 90 degree left
+                        //move idy-prevoiusIdy times*pulse
+                        //rotate 90 degree left
+                        //move previousIdx-idx times*pulse
+                        wall='D'
+                    }
+                    else if(idy<previousIdy && idx>previousIdx){
+                        //rotate 90 degree right
+                        //move previousIdy-idy times*pulse
+                        //rotate 90 degree left
+                        //move idx-previousIdx times*pulse
+                    }
+                    else if(idx==previousIdx && idy>previousIdy){
+                        //rotate 90 degree left
+                        //move idy-prevoiusIdy times*pulse
+                        wall='A'
+                    }
+                    else if(idx==previousIdx && idy<previousIdy){
+                        //rotate 90 degree right
+                        //move previousIdy-idy times*pulse
+                        wall='C'
+                    }
+                    else if(idy==previousIdy && idx>previousIdx){
+                        //move idx-previousIdx times*pulse
+                    }
+                    else if(idy==previousIdy && idx<previousIdx){
+                        //rotate 180 degree
+                        //move previousIdx-idx times*pulse
+                        wall='D'
+                    }
+                }
+                if(wall==='D')
+                {
+                    if(idy>previousIdy && idx>previousIdx){
+                        //rotate 90 degree right
+                        //move idy-prevoiusIdy times*pulse
+                        //rotate 90 degree right
+                        //move idx-previousIdx times*pulse
+                        wall='B'
+                    }
+                    else if(idy<previousIdy && idx<previousIdx){
+                        //rotate 90 degree left
+                        //move previousIdy-idy times*pulse
+                        //rotate 90 degree right
+                        //move previousIdx-idx times*pulse
+                    }
+                    if(idy>previousIdy && idx<previousIdx){
+                        //rotate 90 degree right
+                        //move idy-prevoiusIdy times*pulse
+                        //rotate 90 degree left
+                        //move previousIdx-idx times*pulse
+
+                    }
+                    else if(idy<previousIdy && idx>previousIdx){
+                        //rotate 90 degree left
+                        //move previousIdy-idy times*pulse
+                        //rotate 90 degree left
+                        //move idx-previousIdx times*pulse
+                        wall='B'
+                    }
+                    else if(idx==previousIdx && idy>previousIdy){
+                        //rotate 90 degree right
+                        //move idy-prevoiusIdy times*pulse
+                        wall='A'
+                    }
+                    else if(idx==previousIdx && idy<previousIdy){
+                        //rotate 90 degree left
+                        //move previousIdy-idy times*pulse
+                        wall='C'
+                    }
+                    else if(idy==previousIdy && idx>previousIdx){
+                        //rotate 180 degree
+                        //move idx-previousIdx times*pulse
+                        wall='B'
+                    }
+                    else if(idy==previousIdy && idx<previousIdx){
+                        //move previousIdx-idx times*pulse
+                    }
+                }
+                if(wall==='A'){
+                    if(idy>previousIdy && idx>previousIdx){
+                        //move idy-prevoiusIdy times*pulse
+                        //rotate 90 degree right
+                        //move idx-previousIdx times*pulse
+                        wall='B'
+                    }
+                    else if(idy<previousIdy && idx<previousIdx){
+                        //rotate 180 degree
+                        //move previousIdy-idy times*pulse
+                        //rotate 90 degree right
+                        //move previousIdx-idx times*pulse
+                        wall='D'
+                    }
+                    if(idy>previousIdy && idx<previousIdx){
+                        //move idy-prevoiusIdy times*pulse
+                        //rotate 90 degree left
+                        //move previousIdx-idx times*pulse
+                        wall='D'
+                    }
+                    else if(idy<previousIdy && idx>previousIdx){
+                        //rotate 180 degree
+                        //move previousIdy-idy times*pulse
+                        //rotate 90 degree left
+                        //move idx-previousIdx times*pulse
+                        wall='B'
+                    }
+                    else if(idx==previousIdx && idy>previousIdy){
+                        //move idy-prevoiusIdy times*pulse
+                    }
+                    else if(idx==previousIdx && idy<previousIdy){
+                        //rotate 180 degree
+                        //move previousIdy-idy times*pulse
+                        wall='C'
+                    }
+                    else if(idy==previousIdy && idx>previousIdx){
+                        //rotate 90 degree right
+                        //move idx-previousIdx times*pulse
+                        wall='B'
+                    }
+                    else if(idy==previousIdy && idx<previousIdx){
+                        //rotate 90 degree left
+                        //move previousIdx-idx times*pulse
+                        wall='D'
+                    }
+                }
+                if(wall==='C'){
+                    if(idy>previousIdy && idx>previousIdx){
+                        //rotate 180 degree
+                        //move idy-prevoiusIdy times*pulse
+                        //rotate 90 degree right
+                        //move idx-previousIdx times*pulse
+                        wall='B'
+                    }
+                    else if(idy<previousIdy && idx<previousIdx){
+                        //move previousIdy-idy times*pulse
+                        //rotate 90 degree right
+                        //move previousIdx-idx times*pulse
+                        wall='D'
+                    }
+                    if(idy>previousIdy && idx<previousIdx){
+                        //rotate 180 degree
+                        //move idy-prevoiusIdy times*pulse
+                        //rotate 90 degree left
+                        //move previousIdx-idx times*pulse
+                        wall='D'
+                    }
+                    else if(idy<previousIdy && idx>previousIdx){
+                        //move previousIdy-idy times*pulse
+                        //rotate 90 degree left
+                        //move idx-previousIdx times*pulse
+                        wall='B'
+                    }
+                    else if(idx==previousIdx && idy>previousIdy){
+                        //rotate 180 degree
+                        //move idy-prevoiusIdy times*pulse
+                        wall='A'
+                    }
+                    else if(idx==previousIdx && idy<previousIdy){
+                        //move previousIdy-idy times*pulse
+                    }
+                    else if(idy==previousIdy && idx>previousIdx){
+                        //rotate 90 degree left
+                        //move idx-previousIdx times*pulse
+                        wall='B'
+                    }
+                    else if(idy==previousIdy && idx<previousIdx){
+                        //rotate 90 degree right
+                        //move previousIdx-idx times*pulse
+                        wall='D'
+                    } 
+                }
+
+                previousIdx = idx;
+                previousIdy = idy;
+            });
+        });
+
+    </script>
+</body>
+
+</html>
