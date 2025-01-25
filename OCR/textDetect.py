@@ -22,7 +22,7 @@ while True:
     current_time = time.time()
 
     # Capture an image every 5 seconds
-    if current_time - start_time >= 5:
+    if current_time - start_time >= 2:
         # Convert the frame from BGR (OpenCV default) to RGB
         img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
@@ -38,8 +38,8 @@ while True:
                 try:
                     # Attempt to extract and convert coordinates to integers
                     x, y, w, h = int(b[6]), int(b[7]), int(b[8]), int(b[9])
-                    cv2.rectangle(frame, (x, y), (w, h), (50, 50, 255), 2)
-                    cv2.putText(frame, b[11], (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 50, 255), 2)
+                    cv2.rectangle(frame, (x, y), (w, h), (50, 50, 255), 1)
+                    cv2.putText(frame, b[11], (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 50, 255), 1)
                 except ValueError:
                     # Handle cases where coordinates are not valid integers
                     print("Skipping invalid data:", b)

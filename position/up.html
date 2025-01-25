@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 WebSocket Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .status {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            border-radius: 5px;
+        }
+
+        .data-display {
+            margin: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>ESP32 WebSocket Dashboard</h1>
+    <div class="status">
+        WebSocket Status: <span id="connectionStatus">Disconnected</span>
+    </div>
+
+    <div class="data-display">
+        <h2>Received Data</h2>
+        <p id="gpsData">GPS: Waiting for data...</p>
+        <p id="headingData">Heading: Waiting for data...</p>
+    </div>
+
+    <input type="text" id="lattitude" placeholder="lattitude">
+    <input type="text" id="longitude" placeholder="longitude">
+    <button onclick="sendData()">Send</button>
+
+    <script>
+        const ws = new WebSocket('ws://192.168.127.1:81'); // Replace with ESP32 IP
+
+        ws.onopen = () => {
+            document.getElementById('connectionStatus').innerText = 'Connected';
+            console.log('Connected to WebSocket server.');
+        };
+
+        ws.onclose = () => {
+            document.getElementById('connectionStatus').innerText = 'Disconnected';
+            console.log('Disconnected from WebSocket server.');
+        };
+
+        ws.onmessage = (event) => {
+            console.log('Message from server:', event.data);
+            const data = JSON.parse(event.data); // Assume ESP32 sends JSON data
+            if (data.gps) {
+                document.getElementById('gpsData').innerText = `GPS: Latitude ${data.gps.lat}, Longitude ${data.gps.lng}`;
+            }
+            if (data.heading) {
+                document.getElementById('headingData').innerText = `Heading: ${data.heading}° (${data.direction})`;
+            }
+        };
+
+        function sendData() {
+            const lat = document.getElementById('lattitude').value;
+            const lng = document.getElementById('longitude').value;
+            const data = `${lat},${lng}`;
+            ws.send(data);
+            console.log('Sent:', data);
+        }
+
+    </script>
+</body>
+
+</html>

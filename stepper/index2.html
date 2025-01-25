@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motor Control</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    .button-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    button {
+      font-size: 20px;
+      padding: 10px 20px;
+      margin: 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      border: 2px solid #ccc;
+      background-color: #f0f0f0;
+    }
+    button:hover {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Motor Control</h1>
+  <div class="button-container">
+    <button id="upButton">Down</button>
+    <button id="downButton">Up</button>
+    <button id="frontButton">Front</button>
+    <button id="backButton">Back</button>
+  </div>
+
+  <script>
+    // Create WebSocket connection to ESP32
+    const socket = new WebSocket(`ws://192.168.127.188:82/`);
+  
+    socket.onopen = function(event) {
+      console.log('Connected to WebSocket');
+    };
+  
+    socket.onmessage = function(event) {
+      console.log('Message from server: ', event.data);
+    };
+  
+    let intervalId; // To store the interval ID
+  
+    // Function to start sending a command repeatedly
+    function startCommand(command) {
+      console.log(`Start sending command: ${command}`);
+      intervalId = setInterval(() => {
+        socket.send(command.toUpperCase());
+      }, 100); // Adjust the interval as needed (100ms here)
+    }
+  
+    // Function to stop sending the command
+    function stopCommand() {
+      console.log('Stop sending command');
+      clearInterval(intervalId);
+    }
+  
+    // Attach events to buttons
+    const addButtonListeners = (buttonId, command) => {
+      const button = document.getElementById(buttonId);
+      button.addEventListener("mousedown", () => startCommand(command));
+      button.addEventListener("mouseup", stopCommand);
+      button.addEventListener("mouseleave", stopCommand); // Stop if the cursor leaves the button
+      button.addEventListener("touchstart", () => startCommand(command)); // For touch devices
+      button.addEventListener("touchend", stopCommand); // For touch devices
+    };
+  
+    addButtonListeners("upButton", "up");
+    addButtonListeners("downButton", "down");
+    addButtonListeners("frontButton", "front");
+    addButtonListeners("backButton", "back");
+  </script>
+  
+
+</body>
+</html>

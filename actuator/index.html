@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Actuator Control</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 15px 25px;
+      font-size: 18px;
+      color: white;
+      background-color: #007BFF;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn:active {
+      background-color: #0056b3;
+    }
+    .btn-stop {
+      background-color: #FF0000;
+    }
+    .btn-stop:active {
+      background-color: #b30000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Actuator Control</h1>
+  <button class="btn" onclick="sendCommand('F')">Front-Up</button><br>
+  <button class="btn" onclick="sendCommand('L')">Back-Up</button>
+  <button class="btn btn-stop" onclick="sendCommand('S')">Stop</button>
+  <button class="btn" onclick="sendCommand('R')">Back-Down</button><br>
+  <button class="btn" onclick="sendCommand('B')">Front-Down</button>
+
+  <script>
+    const serverIP = 'http://172.20.0.30';
+
+    function sendCommand(direction) {
+      fetch(`${serverIP}/move?dir=${direction}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(data => {
+          console.log('Response:', data);
+        })
+        .catch(error => {
+          console.error('Error with fetch operation:', error);
+        });
+    }
+  </script>
+</body>
+</html>

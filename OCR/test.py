@@ -11,6 +11,9 @@ cap = cv2.VideoCapture(0)  # 0 is the default camera
 # Store the start time for the 5-second interval
 start_time = time.time()
 
+# Define the languages to use for OCR (English + Bangla)
+language = "eng+ben"  # "eng" for English, "ben" for Bangla
+
 while True:
     # Read each frame from the webcam
     ret, frame = cap.read()
@@ -23,22 +26,29 @@ while True:
 
     # Capture an image every 5 seconds
     if current_time - start_time >= 0:
-        # Convert the frame from BGR (OpenCV default) to RGB
-        img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # Convert the frame to grayscale
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # Perform OCR on the frame and print the text
-        print(pytesseract.image_to_string(img))
+        # Apply binary thresholding to isolate white text on black background
+        _, binary_image = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY)
 
-        # Detecting characters and drawing boxes
-        hImg, wImg, _ = img.shape
-        boxes = pytesseract.image_to_data(img)
+        # Optionally, invert the binary image (if needed)
+        # binary_image = cv2.bitwise_not(binary_image)
+
+        # Perform OCR on the binary image
+        text = pytesseract.image_to_string(binary_image, lang=language)
+        print("Detected text:", text)
+
+        # Detecting characters and drawing boxes on the binary image
+        hImg, wImg = binary_image.shape
+        boxes = pytesseract.image_to_data(binary_image, lang=language)
         for b in boxes.splitlines():
             b = b.split()
             if len(b) == 12:  # Ensure the line has enough information
                 try:
                     # Attempt to extract and convert coordinates to integers
                     x, y, w, h = int(b[6]), int(b[7]), int(b[8]), int(b[9])
-                    cv2.rectangle(frame, (x, y), (w, h), (50, 50, 255), 2)
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (50, 50, 255), 2)
                     cv2.putText(frame, b[11], (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 50, 255), 2)
                 except ValueError:
                     # Handle cases where coordinates are not valid integers

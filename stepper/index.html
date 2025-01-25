@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stepper Motor Control</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    button {
+      font-size: 20px;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Stepper Motor Control</h1>
+  <button id="front">Gripper Up</button>
+  <button id="back">Gripper Down</button>
+  <button id="rotate-left">Rotate Left</button>
+  <button id="rotate-right">Rotate Right</button>
+  <!-- <h2>Current Degree: <span id="degree">0</span>°</h2> -->
+
+  <script>
+    // Connect to WebSocket server
+    const socket = new WebSocket(`ws://172.20.0.30:81/`);
+    const degreeElement = document.getElementById("degree");
+
+    let intervalId; // To store the interval ID for continuous commands
+
+    // Function to send commands continuously
+    function startCommand(command) {
+      // Send the command immediately
+      socket.send(command);
+      // Send the command repeatedly every 100ms
+      intervalId = setInterval(() => {
+        socket.send(command);
+      }, 100);
+    }
+
+    // Function to stop sending commands
+    function stopCommand() {
+      clearInterval(intervalId);
+    }
+
+    // Button events
+    const buttons = [
+      { id: "front", command: "front" },
+      { id: "back", command: "back" },
+      { id: "rotate-left", command: "rotateLeft" },
+      { id: "rotate-right", command: "rotateRight" },
+    ];
+
+    buttons.forEach(({ id, command }) => {
+      const button = document.getElementById(id);
+      button.addEventListener("mousedown", () => startCommand(command));
+      button.addEventListener("mouseup", stopCommand);
+      button.addEventListener("mouseleave", stopCommand);
+    });
+
+    // Update current degree from the server
+    socket.onmessage = (event) => {
+      degreeElement.textContent = event.data;
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GPS Distance Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #0056b3;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+
+    input {
+      width: 250px;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #0056b3;
+      color: white;
+      font-size: 16px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #004494;
+    }
+
+    #result {
+      font-size: 18px;
+      color: #333;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    div.container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+  <script>
+    let intervalId;
+
+    async function getDistance() {
+      const lat = parseFloat(document.getElementById('latitude').value);
+      const lng = parseFloat(document.getElementById('longitude').value);
+
+      if (isNaN(lat) || isNaN(lng)) {
+        document.getElementById('result').innerText = "Please enter valid latitude and longitude.";
+        return;
+      }
+
+      try {
+        // Fetch current GPS location from ESP32 API
+        const response = await fetch('http://192.168.127.1/gps');
+        const data = await response.json();
+
+        // Calculate distance using the Haversine formula
+        const R = 6371; // Earth's radius in km
+        const dLat = (lat - data.latitude) * Math.PI / 180;
+        const dLng = (lng - data.longitude) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) ** 2 +
+                  Math.cos(data.latitude * Math.PI / 180) * Math.cos(lat * Math.PI / 180) *
+                  Math.sin(dLng / 2) ** 2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c;
+
+        document.getElementById('result').innerText = `Distance: ${(distance * 1000).toFixed(2)} meters`;
+      } catch (error) {
+        document.getElementById('result').innerText = "Error fetching GPS data.";
+        clearInterval(intervalId);
+      }
+    }
+
+    function startAutoRefresh() {
+      // Refresh the distance every 1 second
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+      intervalId = setInterval(getDistance, 1000);
+    }
+  </script>
+  <script>
+    async function sendCoordinates() {
+      const lat = parseFloat(document.getElementById('latitude').value);
+      const lng = parseFloat(document.getElementById('longitude').value);
+
+      if (isNaN(lat) || isNaN(lng)) {
+        document.getElementById('result').innerText = "Please enter valid latitude and longitude.";
+        return;
+      }
+
+      try {
+        // Send the coordinates to the ESP32 through POST request
+        const response = await fetch('http://192.168.127.1/coordinates', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ latitude: lat, longitude: lng }),
+        });
+
+        const result = await response.json();
+        document.getElementById('result').innerText = `Coordinates received: ${result.latitude}, ${result.longitude}`;
+      } catch (error) {
+        document.getElementById('result').innerText = "Error sending coordinates.";
+      }
+    }
+</script>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculate Distance to GPS Location</h1>
+    <label for="latitude">Latitude:</label>
+    <input type="text" id="latitude" placeholder="Enter Latitude">
+    <label for="longitude">Longitude:</label>
+    <input type="text" id="longitude" placeholder="Enter Longitude">
+    <button onclick="startAutoRefresh()">Start Distance Calculation</button>
+    <p id="result"></p>
+  </div>
+</body>
+</html>

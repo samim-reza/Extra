@@ -87,7 +87,7 @@
         var speedvar = 10;
         document.getElementById("speedvar").innerHTML = speedvar;
 
-        let ip = '192.168.151.42';
+        let ip = '192.168.127.188';
         function onTouchStart(direction) {
             console.log("Start moving:", direction);
             fetch(`http://${ip}/move?dir=${direction}`)
