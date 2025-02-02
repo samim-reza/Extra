@@ -1,0 +1,14 @@
+network:
+    ethernets:
+        eth0:
+            dhcp4: true
+    version: 2
+    wifis:
+        renderer: networkd
+        wlan0:
+            access-points:
+                # GUB:
+                #     password: d20ad9b8f5c246c6cf85b73d944348acc6cc60ad34e634744>
+                Hotspot:
+                    password: "123456789"
+            dhcp4: true

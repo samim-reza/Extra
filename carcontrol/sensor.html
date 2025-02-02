@@ -529,7 +529,7 @@
         const tempChart = new Chart(tempCtx, { ...config, data: tempData });
         const hmdChart = new Chart(hmdCtx, { ...config, data: hmdData });
 
-        let ip = '192.168.151.137';
+        let ip = '172.20.7.240';
 
         async function fetchData(path) {
             fetch(`http://${ip}/${path}`)
