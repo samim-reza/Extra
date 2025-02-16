@@ -78,6 +78,7 @@
     let wsInterval;
 
     function sendHTTPCommand(command) {
+      
       fetch(`${serverIP}/move?dir=${command}`)
         .then(response => {
           if (!response.ok) throw new Error('HTTP Error');

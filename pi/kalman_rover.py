@@ -21,7 +21,7 @@ DATA_REGISTER_BEGIN = 0x03
 bus = smbus.SMBus(1)
 
 last_update_time = 0  # Initialize the time of the last request
-TIME_INTERVAL = 0.5  # 0.5 seconds interval
+TIME_INTERVAL = 1  # 0.5 seconds interval
 
 # GPS setup
 gps_serial = serial.Serial('/dev/ttyAMA0', 9600, timeout=1)
@@ -33,7 +33,8 @@ current_target = 0
 
 # Configuration
 SPEED = 0.6  # 0-1
-L_R_SPD = 0.45
+RL_H = 0.55
+RL_L = 0.2
 dlow = 0.1
 dhigh = 0.5
 DECLINATION = 0.22  # Magnetic declination
@@ -108,8 +109,6 @@ def read_magnetometer():
     heading_deg = math.degrees(heading)
 
     smoothed_heading = kf_heading.update(heading_deg)
-
-    print('Heading (Kalman):', smoothed_heading)
     return smoothed_heading
 
 
@@ -168,16 +167,10 @@ def get_gps_data():
                         # Convert ground speed from knots to meters per second (1 knot ≈ 0.51444 m/s)
                         velocity_mps = ground_speed * 0.51444
 
-                        print(f"Raw Latitude: {lat_deg}, Raw Longitude: {lon_deg}, Ground Speed: {velocity_mps} m/s")
-
                         # Apply Kalman filter to smooth the latitude, longitude, and velocity
                         smoothed_lat = kf_lat.update(lat_deg)
                         smoothed_lon = kf_lon.update(lon_deg)
                         smoothed_vel = kf_vel.update(velocity_mps)
-
-                        print(f"Latitude (Kalman): {smoothed_lat}")
-                        print(f"Longitude (Kalman): {smoothed_lon}")
-                        print(f"Velocity (Kalman): {smoothed_vel}")
 
                         # Update last valid data
                         last_lat, last_lon, last_velocity = smoothed_lat, smoothed_lon, smoothed_vel
@@ -248,8 +241,8 @@ def turn_left():
     IN2.on()
     IN3.on()
     IN4.off()
-    EN1.value = L_R_SPD
-    EN2.value = L_R_SPD
+    EN1.value = RL_L
+    EN2.value = RL_H
 
 def left_drift():
     print('Drifting left')
@@ -266,8 +259,8 @@ def turn_right():
     IN2.off()
     IN3.off()
     IN4.on()
-    EN1.value = L_R_SPD
-    EN2.value = L_R_SPD
+    EN1.value = RL_H
+    EN2.value = RL_L
 
 def right_drift():
     print('Drifting right')
@@ -303,20 +296,33 @@ if __name__ == '__main__':
             bearing = calculate_bearing(current_lat, current_lon, target_lat[current_target], target_lng[current_target])
             current_heading = read_magnetometer()
             heading_error = adjust_heading(current_heading, bearing)
-            print(f"Bearing: ",bearing)
+            if should_run_functions():
+                print(f"Target: ", current_target)
+                print(f"Current lat: ",current_lat, " Current lon: ", current_lon)
+                print(f"Heading Error: ",heading_error)
+                print(f"Bearing: ",bearing)
+                print(f"Current heading: ",current_heading)
+                print(f"Distance: ",distance)
+
             if distance < 2.5:
                 stop_motors()
-                time.sleep(5)
                 current_target += 1
+                start_time = time.time()
+                while time.time() - start_time < 5:  # Continue while 5 seconds haven't passed
+                    distance = calculate_distance(current_lat, current_lon, target_lat[current_target], target_lng[current_target])
+                    bearing = calculate_bearing(current_lat, current_lon, target_lat[current_target], target_lng[current_target])
+                    current_heading = read_magnetometer()
+                    heading_error = adjust_heading(current_heading, bearing)
+
             elif abs(heading_error) > 10:
-                if abs(heading_error) > 90:  # More aggressive correction threshold
+                if abs(heading_error) > 55:  # More aggressive correction threshold
                     if heading_error > 0:
                         null = 1
                         right = 1
                         if left == 1:
                             stop_motors()
                             left = 0
-                            time.sleep(1.5)
+                            time.sleep(0.1)
                         turn_right()
                     else:
                         null = 1
@@ -324,9 +330,9 @@ if __name__ == '__main__':
                         if right == 1:
                             stop_motors()
                             right = 0
-                            time.sleep(1.5)
+                            time.sleep(0.1)
                         turn_left()
-                elif abs(heading_error) < 90:  # Subtle correction
+                elif abs(heading_error) < 55:  # Subtle correction
                     if heading_error > 0:
                         if null == 1:
                             stop_motors()
@@ -337,11 +343,11 @@ if __name__ == '__main__':
                         if null == 1:
                             stop_motors()
                             null = 0
-                            time.sleep(1.5)
+                            time.sleep(0.1)
                         left_drift()
             else:
                 move_forward()
-            time.sleep(0.5)
+            time.sleep(0.05)
     except KeyboardInterrupt:
         stop_motors()
         kill_process()
