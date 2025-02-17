@@ -9,45 +9,75 @@
       font-family: Arial, sans-serif;
       background-color: #f4f4f9;
       text-align: center;
-      padding: 30px;
+      padding: 20px;
     }
     h1 {
       color: #333;
       margin-bottom: 20px;
+      font-size: 2.5vw;
     }
     h2 {
       color: #555;
-      margin-top: 40px;
-      margin-bottom: 20px;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-size: 2vw;
     }
+    
+    /* Button Styling */
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+
     button {
-      font-size: 18px;
-      padding: 12px 20px;
-      margin: 10px;
+      font-size: 1.5vw;
+      padding: 1vw 2vw;
       cursor: pointer;
       border: none;
       border-radius: 8px;
       color: #fff;
       background-color: #007BFF;
       transition: background-color 0.3s, transform 0.2s;
+      min-width: 150px;
     }
-    button:active {
-      background-color: #0056b3;
-      transform: scale(0.95);
-    }
+
     button:hover {
       background-color: #0056b3;
     }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
     .stop {
       background-color: #FF0000;
     }
+
     .stop:hover {
       background-color: #b30000;
     }
+
     footer {
-      margin-top: 50px;
+      margin-top: 40px;
       color: #888;
-      font-size: 14px;
+      font-size: 1.2vw;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 6vw;
+      }
+      h2 {
+        font-size: 4vw;
+      }
+      button {
+        font-size: 4vw;
+        padding: 4vw;
+        width: 80%;
+      }
     }
   </style>
 </head>
@@ -55,30 +85,34 @@
   <h1>Unified Motor Control</h1>
 
   <h2>Actuator Motors</h2>
-  <button onclick="sendHTTPCommand('F')">Forward</button>
-  <button onclick="sendHTTPCommand('B')">Backward</button>
-  <button class="stop" onclick="sendHTTPCommand('S')">Stop</button>
-  <button onclick="sendHTTPCommand('L')">Hand Up</button>
-  <button onclick="sendHTTPCommand('R')">Hand Down</button>
-  
+  <div class="button-container">
+    <button onclick="sendHTTPCommand('F')">Forward</button>
+    <button onclick="sendHTTPCommand('B')">Backward</button>
+    <button class="stop" onclick="sendHTTPCommand('S')">Stop</button>
+    <button onclick="sendHTTPCommand('L')">Hand Up</button>
+    <button onclick="sendHTTPCommand('R')">Hand Down</button>
+  </div>
 
   <h2>Stepper Motors</h2>
-  <button onmousedown="sendWSCommand('front')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Gripper Up</button>
-  <button onmousedown="sendWSCommand('back')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Gripper Down</button>
-  <button onmousedown="sendWSCommand('rotateLeft')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Rotate Left</button>
-  <button onmousedown="sendWSCommand('rotateRight')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Rotate Right</button>
+  <div class="button-container">
+    <button onmousedown="sendWSCommand('front')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Gripper Up</button>
+    <button onmousedown="sendWSCommand('back')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Gripper Down</button>
+    <button onmousedown="sendWSCommand('rotateLeft')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Rotate Left</button>
+    <button onmousedown="sendWSCommand('rotateRight')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Rotate Right</button>
+  </div>
 
   <h2>Gripper Control</h2>
-  <button onmousedown="sendWSCommand('open')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Open Hand</button>
-  <button onmousedown="sendWSCommand('close')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Close Hand</button>
+  <div class="button-container">
+    <button onmousedown="sendWSCommand('open')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Open Hand</button>
+    <button onmousedown="sendWSCommand('close')" onmouseup="stopWSCommand()" onmouseleave="stopWSCommand()">Close Hand</button>
+  </div>
 
   <script>
-    const serverIP = 'http://172.20.3.132';
-    const ws = new WebSocket('ws://172.20.3.132:81');
+    const serverIP = 'http://172.20.0.32';
+    const ws = new WebSocket('ws://172.20.0.32:81');
     let wsInterval;
 
     function sendHTTPCommand(command) {
-      
       fetch(`${serverIP}/move?dir=${command}`)
         .then(response => {
           if (!response.ok) throw new Error('HTTP Error');
@@ -90,7 +124,7 @@
 
     function sendWSCommand(command) {
       ws.send(command);
-      wsInterval = setInterval(() => ws.send(command), 500);
+      wsInterval = setInterval(() => ws.send(command), 1100);
     }
 
     function stopWSCommand() {

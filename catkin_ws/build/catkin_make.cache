@@ -1,0 +1,2 @@
+my_robot_description:pi:robot
+-DCATKIN_DEVEL_PREFIX=/home/samim01/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/samim01/catkin_ws/install -G Unix Makefiles

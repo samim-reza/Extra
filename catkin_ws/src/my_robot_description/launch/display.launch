@@ -1,0 +1,7 @@
+<launch>
+  <param name="robot_description" command="cat $(find my_robot_description)/urdf/six_wheeled_robot.urdf"/>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" output="screen"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find my_robot_description)/rviz/robot.rviz"/>
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" args="diff_drive_controller joint_state_controller" />
+</launch>
