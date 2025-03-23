@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mars Rover Arm Control Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #1a1f35;
+            color: white;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -0.5rem;
+        }
+
+        .col-full {
+            width: 100%;
+            padding: 0 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .col-8 {
+            width: 66.666%;
+            padding: 0 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .col-4 {
+            width: 33.333%;
+            padding: 0 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .col-6 {
+            width: 50%;
+            padding: 0 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .camera-panel-main {
+            background-color: #1e2738;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .camera-panel {
+            background-color: #1e2738;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            height: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .camera-panel.selected {
+            border: 2px solid #ffc107;
+        }
+
+        .camera-image {
+            width: 100%;
+            border-radius: 0.25rem;
+        }
+
+        .main-camera-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 0.25rem;
+            border: 1px solid #6c757d;
+        }
+
+        .control-panel {
+            background-color: #1e2738;
+            border-radius: 0.25rem;
+            padding: 1.5rem;
+            height: 100%;
+        }
+
+        .control-button {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ffc107;
+            background-color: transparent;
+            color: #ffc107;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .control-button.active {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .status-card {
+            background-color: #6c757d;
+            color: white;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .badge {
+            background-color: #28a745;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin-right: 0.5rem;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-full">
+                <h1 class="header">Mars Rover Arm Control Dashboard</h1>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- First Column - Camera Feeds -->
+            <div class="col-8">
+                <div class="row">
+                    <!-- Main Camera Display -->
+                    <div class="col-full">
+                        <div class="camera-panel-main">
+                            <h4>Main View: MAIN Camera</h4>
+                            <img src="/api/placeholder/640/480?text=Camera main" 
+                                 alt="Main Camera Feed" 
+                                 class="main-camera-image">
+                            <div style="margin-top: 0.5rem;">
+                                <span class="badge">Live</span>
+                                <span>Arm Position: MIDDLE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <!-- Left Side Cameras -->
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="camera-panel">
+                                    <h6>Front Camera</h6>
+                                    <img src="/api/placeholder/640/480?text=Camera front" 
+                                         alt="Front Camera" 
+                                         class="camera-image">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="camera-panel">
+                                    <h6>Arm Camera</h6>
+                                    <img src="/api/placeholder/640/480?text=Camera arm" 
+                                         alt="Arm Camera" 
+                                         class="camera-image">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side Cameras -->
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="camera-panel">
+                                    <h6>Rear Camera</h6>
+                                    <img src="/api/placeholder/640/480?text=Camera rear" 
+                                         alt="Rear Camera" 
+                                         class="camera-image">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="camera-panel">
+                                    <h6>Ground Camera</h6>
+                                    <img src="/api/placeholder/640/480?text=Camera ground" 
+                                         alt="Ground Camera" 
+                                         class="camera-image">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Second Column - Arm Controls -->
+            <div class="col-4">
+                <div class="control-panel">
+                    <h3 style="text-align: center; margin-bottom: 1.5rem;">Arm Controls</h3>
+                    
+                    <button class="control-button active">
+                        Move Arm Up
+                    </button>
+                    
+                    <button class="control-button">
+                        Move Arm Middle
+                    </button>
+                    
+                    <button class="control-button">
+                        Move Arm Down
+                    </button>
+                    
+                    <div class="status-card">
+                        <h5>Arm Status</h5>
+                        <p>Current Position: <strong>MIDDLE</strong></p>
+                        <p>Temperature: <span style="color: #28a745;">Normal</span></p>
+                        <p>Battery: <span style="color: #ffc107;">87%</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

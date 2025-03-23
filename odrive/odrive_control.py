@@ -11,7 +11,7 @@ print("ODrive found!")
 dev0.clear_errors()
 
 # Motor Configuration (Adjust according to your motor)
-dev0.axis0.motor.config.current_lim = 10  # Max current in Amps
+dev0.axis0.motor.config.current_lim = 15  # Max current in Amps
 dev0.axis0.motor.config.pole_pairs = 21   # Set according to your motor
 dev0.axis0.motor.config.calibration_current = 10
 dev0.axis0.encoder.config.cpr = 126  # Counts per revolution of the encoder
