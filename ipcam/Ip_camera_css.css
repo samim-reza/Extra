@@ -1,0 +1,132 @@
+.total{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.main_window{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    height: 100%;
+    border-radius: 0%;
+}
+
+.side_box{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    
+    width: 100%;
+    height: 25%;
+    border-radius: 0%;
+    /* border: 1px solid yellow; */
+}
+.side_box_item{
+    width: 24%;
+    height: 92%;
+
+    /* border: 1px solid yellow; */
+}
+.main_camera_block{
+    width: 100%;
+    height: 100%;
+    border-radius: 0%;
+    /* border: 1px solid white; */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+.main_camera{
+    width: 75%;
+    height: 100%;
+    border-radius: 0%;
+    /* border: 1px solid white; */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+.camera_focus{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 0%;
+    width: 100%;
+    height: 75%;
+    /* border:  1px solid red; */
+    
+}
+.infobox{
+    width: 100%;
+    height: 25%;
+    /* border: 1px solid yellow; */
+}
+.mini_camra{
+    width: 25%;
+    height: 100%;
+    /* border: 1px solid red; */
+    border-radius: 0%;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+.topmenu{
+    width: 100%;
+    height: 6%;
+    /* border: 1px solid coral; */
+}
+.camerabody{
+    width: 100%;
+    height: 94%;
+    /* border: 1px solid whitesmoke; */
+    border-radius: 0%;
+
+    display: flex;
+    flex-direction: row;
+}
+.mini_camra_display{
+    width: 100%;
+    height: 100%;
+    /* border: 1px solid yellowgreen; */
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.hidden {display: none;}
+
+.right{
+    float: right!important;
+    background-color: #2a3d0d!important;
+}
+div{
+    border-radius: 10px;
+    box-shadow: -1px -1px 10px rgba(255,255,255,.3) inset,
+		2px 2px 20px rgba(0,0,0,.5);
+	text-shadow: 0 1px 1px rgba(255,255,255,.6);
+}
+
+.camera_focus:after{
+    -webkit-filter: blur(3px);
+    filter: blur(3px);
+    filter: blur(3px);
+    filter: blur(3px);
+    filter: blur(3px);
+}
+
+.side_box_item:after{
+    -webkit-filter: blur(3px);
+}
+
+.mini_camra_display:after{
+    -webkit-filter: blur(3px);
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Ip_camera_css.css">
+    <title>Camera Overview</title>
+</head>
+<body style="background: rgb(28,28,28);
+background: radial-gradient(ellipse at bottom, rgba(50,50,50,1) 0%, rgba(40,40,40,1) 46%, rgba(15,15,15,1) 100%);">
+    <div class="total">
+        <div class="main_window" style="border-radius: 0%;">
+            <div class="main_camera_block" style="border-radius: 0%;">
+                <div class="topmenu" style="border-radius: 0%;">
+                    <div class="ui compact inverted menu right">
+                        <div class="ui simple dropdown item">
+                          Camera Selection
+                          <i class="dropdown icon"></i>
+                          <div class="menu">
+                            <div class="item" onclick="swap('mini_1')">Camera 1</div>
+                            <div class="item" onclick="swap('mini_2')">Camera 2</div>
+                            <div class="item" onclick="swap('mini_3')">Camera 3</div>
+                            <div class="item" onclick="swap('mini_4')">Camera 4</div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="camerabody">
+                    <div class="main_camera">
+                        <div class="camera_focus" id="main_display">
+                            <h1 style="color: white;">Select Camera to Display</h1>
+                        </div>
+                        
+                        <div class="side_box">
+                            <div class="side_box_item"></div>
+                            <div class="side_box_item"></div>
+                            <div class="side_box_item"></div>
+                            <div class="side_box_item"></div>
+                        </div>
+                    </div>
+
+                    <div class="mini_camra">
+                        <!-- Camera 1 -->
+                        <div class="mini_camra_display" id="mini_1" onclick="swap('mini_1')">
+                            <iframe src="rtsp://admin:admin123@192.168.1.111:37777/cam/realmonitor?channel=1&subtype=0" 
+                                    height="100%" width="100%" frameborder="0"></iframe>
+                        </div>
+                        
+                        <!-- Camera 2 -->
+                        <div class="mini_camra_display" id="mini_2" onclick="swap('mini_2')">
+                            <iframe src="rtsp://admin:admin123@192.168.1.111:37777/cam/realmonitor?channel=1&subtype=0" 
+                                    height="100%" width="100%" frameborder="0"></iframe>
+                        </div>
+                        
+                        <!-- Camera 3 -->
+                        <div class="mini_camra_display" id="mini_3" onclick="swap('mini_3')">
+                            <iframe src="rtsp://admin:admin123@192.168.1.111:37777/cam/realmonitor?channel=1&subtype=0" 
+                                    height="100%" width="100%" frameborder="0"></iframe>
+                        </div>
+                        
+                        <!-- Camera 4 -->
+                        <div class="mini_camra_display" id="mini_4" onclick="swap('mini_4')">
+                            <iframe src="rtsp://admin:admin123@192.168.1.111:37777/cam/realmonitor?channel=1&subtype=0" 
+                                    height="100%" width="100%" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function swap(name) {
+            const source = document.getElementById(name);
+            const target = document.getElementById("main_display");
+            target.innerHTML = source.innerHTML;
+        }
+    </script>
+
+    <!-- External Resources -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+</body>
+</html>

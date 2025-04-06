@@ -1,234 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mars Rover Arm Control Dashboard</title>
+    <title>Robot Navigation Visualization</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/roslib@1.3.0/build/roslib.min.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+        #map { height: 600px; width: 100%; }
+        .status-panel { 
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
         }
-
-        body {
-            background-color: #1a1f35;
-            color: white;
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            padding: 1rem;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -0.5rem;
-        }
-
-        .col-full {
-            width: 100%;
-            padding: 0 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .col-8 {
-            width: 66.666%;
-            padding: 0 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .col-4 {
-            width: 33.333%;
-            padding: 0 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .col-6 {
-            width: 50%;
-            padding: 0 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .camera-panel-main {
-            background-color: #1e2738;
-            border-radius: 0.25rem;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .camera-panel {
-            background-color: #1e2738;
-            border-radius: 0.25rem;
-            padding: 0.5rem;
-            cursor: pointer;
-            height: 100%;
-            margin-bottom: 1rem;
-        }
-
-        .camera-panel.selected {
-            border: 2px solid #ffc107;
-        }
-
-        .camera-image {
-            width: 100%;
-            border-radius: 0.25rem;
-        }
-
-        .main-camera-image {
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-            border-radius: 0.25rem;
-            border: 1px solid #6c757d;
-        }
-
-        .control-panel {
-            background-color: #1e2738;
-            border-radius: 0.25rem;
-            padding: 1.5rem;
-            height: 100%;
-        }
-
-        .control-button {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 0.25rem;
-            margin-bottom: 1rem;
-            border: 1px solid #ffc107;
-            background-color: transparent;
-            color: #ffc107;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        .control-button.active {
-            background-color: #ffc107;
-            color: #000;
-        }
-
-        .status-card {
-            background-color: #6c757d;
-            color: white;
-            border-radius: 0.25rem;
-            padding: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .badge {
-            background-color: #28a745;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            margin-right: 0.5rem;
-            font-size: 0.75rem;
+        .status-box {
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-full">
-                <h1 class="header">Mars Rover Arm Control Dashboard</h1>
-            </div>
+    <h1>Robot Navigation Monitor</h1>
+    
+    <div class="status-panel">
+        <div class="status-box">
+            <h3>Position</h3>
+            <p>Latitude: <span id="lat">-</span></p>
+            <p>Longitude: <span id="lng">-</span></p>
         </div>
-        
-        <div class="row">
-            <!-- First Column - Camera Feeds -->
-            <div class="col-8">
-                <div class="row">
-                    <!-- Main Camera Display -->
-                    <div class="col-full">
-                        <div class="camera-panel-main">
-                            <h4>Main View: MAIN Camera</h4>
-                            <img src="/api/placeholder/640/480?text=Camera main" 
-                                 alt="Main Camera Feed" 
-                                 class="main-camera-image">
-                            <div style="margin-top: 0.5rem;">
-                                <span class="badge">Live</span>
-                                <span>Arm Position: MIDDLE</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <!-- Left Side Cameras -->
-                    <div class="col-6">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="camera-panel">
-                                    <h6>Front Camera</h6>
-                                    <img src="/api/placeholder/640/480?text=Camera front" 
-                                         alt="Front Camera" 
-                                         class="camera-image">
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="camera-panel">
-                                    <h6>Arm Camera</h6>
-                                    <img src="/api/placeholder/640/480?text=Camera arm" 
-                                         alt="Arm Camera" 
-                                         class="camera-image">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Right Side Cameras -->
-                    <div class="col-6">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="camera-panel">
-                                    <h6>Rear Camera</h6>
-                                    <img src="/api/placeholder/640/480?text=Camera rear" 
-                                         alt="Rear Camera" 
-                                         class="camera-image">
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="camera-panel">
-                                    <h6>Ground Camera</h6>
-                                    <img src="/api/placeholder/640/480?text=Camera ground" 
-                                         alt="Ground Camera" 
-                                         class="camera-image">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Second Column - Arm Controls -->
-            <div class="col-4">
-                <div class="control-panel">
-                    <h3 style="text-align: center; margin-bottom: 1.5rem;">Arm Controls</h3>
-                    
-                    <button class="control-button active">
-                        Move Arm Up
-                    </button>
-                    
-                    <button class="control-button">
-                        Move Arm Middle
-                    </button>
-                    
-                    <button class="control-button">
-                        Move Arm Down
-                    </button>
-                    
-                    <div class="status-card">
-                        <h5>Arm Status</h5>
-                        <p>Current Position: <strong>MIDDLE</strong></p>
-                        <p>Temperature: <span style="color: #28a745;">Normal</span></p>
-                        <p>Battery: <span style="color: #ffc107;">87%</span></p>
-                    </div>
-                </div>
-            </div>
+        <div class="status-box">
+            <h3>Navigation</h3>
+            <p>Heading: <span id="heading">-</span>°</p>
+            <p>Speed: <span id="speed">-</span> m/s</p>
+        </div>
+        <div class="status-box">
+            <h3>Motors</h3>
+            <p>Left Speed: <span id="left-speed">-</span></p>
+            <p>Right Speed: <span id="right-speed">-</span></p>
+        </div>
+        <div class="status-box">
+            <h3>Target</h3>
+            <p>Current Target: <span id="current-target">-</span></p>
+            <p>Distance: <span id="target-distance">-</span> m</p>
         </div>
     </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script>
+        // ROS connection setup
+        const ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090'
+        });
+
+        ros.on('connection', () => {
+            console.log('Connected to ROSBridge');
+            initSubscribers();
+        });
+
+        ros.on('error', (error) => {
+            console.log('Error connecting to ROSBridge:', error);
+        });
+
+        // Map initialization
+        const map = L.map('map').setView([23.8295615, 90.567213], 18);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        let robotMarker;
+        let pathPolyline;
+        const pathPoints = [];
+        const targetMarkers = [];
+
+        // Initialize map elements
+        function initMapElements() {
+            // Add target waypoints
+            const targets = [
+                {lat: 23.8295615, lng: 90.567213},
+                {lat: 23.8296240, lng: 90.5674391},
+                {lat: 23.8296267, lng: 90.5673747}
+            ];
+
+            targets.forEach((target, index) => {
+                const marker = L.marker([target.lat, target.lng], {
+                    icon: L.divIcon({
+                        className: 'target-marker',
+                        html: `<div style="background: red; width: 20px; height: 20px; border-radius: 50%;"></div>`,
+                        iconSize: [20, 20]
+                    })
+                }).bindPopup(`Target ${index + 1}`).addTo(map);
+                targetMarkers.push(marker);
+            });
+        }
+
+        // ROS subscribers
+        function initSubscribers() {
+            // GPS Data Subscriber
+            const gpsSubscriber = new ROSLIB.Topic({
+                ros: ros,
+                name: '/gps_data',
+                messageType: 'geometry_msgs/Vector3'
+            });
+
+            gpsSubscriber.subscribe((msg) => {
+                updatePosition(msg.x, msg.y, msg.z);
+            });
+
+            // Heading Subscriber
+            const headingSubscriber = new ROSLIB.Topic({
+                ros: ros,
+                name: '/heading',
+                messageType: 'std_msgs/Float64'
+            });
+
+            headingSubscriber.subscribe((msg) => {
+                document.getElementById('heading').textContent = msg.data.toFixed(2);
+                if (robotMarker) {
+                    robotMarker.setRotationAngle(msg.data);
+                }
+            });
+
+            // Motor Control Subscriber
+            const motorSubscriber = new ROSLIB.Topic({
+                ros: ros,
+                name: '/motor_control',
+                messageType: 'geometry_msgs/Vector3'
+            });
+
+            motorSubscriber.subscribe((msg) => {
+                document.getElementById('left-speed').textContent = msg.x.toFixed(2);
+                document.getElementById('right-speed').textContent = msg.y.toFixed(2);
+            });
+        }
+
+        function updatePosition(lat, lng, speed) {
+            // Update status display
+            document.getElementById('lat').textContent = lat.toFixed(7);
+            document.getElementById('lng').textContent = lng.toFixed(7);
+            document.getElementById('speed').textContent = speed.toFixed(2);
+
+            // Update map position
+            if (!robotMarker) {
+                robotMarker = L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: 'robot-marker',
+                        html: '<div style="background: blue; width: 24px; height: 24px; border-radius: 50%; transform: rotate(45deg);"></div>',
+                        iconSize: [24, 24]
+                    }),
+                    rotationAngle: 0,
+                    rotationOrigin: 'center'
+                }).addTo(map);
+                pathPolyline = L.polyline([], {color: 'blue'}).addTo(map);
+            } else {
+                robotMarker.setLatLng([lat, lng]);
+            }
+
+            // Update path
+            pathPoints.push([lat, lng]);
+            pathPolyline.setLatLngs(pathPoints);
+
+            // Keep map centered on robot
+            map.setView([lat, lng], 18);
+        }
+
+        // Initialize the map elements when page loads
+        initMapElements();
+    </script>
 </body>
 </html>

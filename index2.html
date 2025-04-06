@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.offline/leaflet.offline.css">
+    <style>
+        #map { height: 100vh; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.offline/leaflet.offline.js"></script>
+    <script>
+        // Initialize map
+        var map = L.map('map').setView([51.505, -0.09], 13);
+
+        // Create tile layer
+        var tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        
+        // Create offline tile layer with local storage
+        var tileLayer = L.tileLayer(tileUrl, {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Initialize offline tile storage
+        var control = L.control.offline(tileLayer, {
+            position: 'topleft',
+            confirmSavingCallback: function(nbTilesToSave, proceedCallback) {
+                if (window.confirm(`Save ${nbTilesToSave} tiles for offline use?`)) {
+                    proceedCallback();
+                }
+            },
+            confirmBeforeDownload: true,
+            localStorage: true
+        }).addTo(map);
+
+        // Add scale to map
+        L.control.scale().addTo(map);
+
+        // Handle online/offline status
+        map.on('offlinelayer:connectionchange', function(event) {
+            if (!event.connected) {
+                alert('You are offline - using locally stored tiles');
+            }
+        });
+    </script>
+</body>
+</html>

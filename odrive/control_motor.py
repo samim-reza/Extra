@@ -11,10 +11,10 @@ print("ODrive found!")
 dev0.clear_errors()
 
 # Motor Configuration (Adjust according to your motor)
-dev0.axis0.motor.config.current_lim = 15  # Max current in Amps
-dev0.axis0.motor.config.pole_pairs = 21   # Set according to your motor
-dev0.axis0.motor.config.calibration_current = 10
-dev0.axis0.encoder.config.cpr = 126  # Counts per revolution of the encoder
+dev0.axis1.motor.config.current_lim = 15  # Max current in Amps
+dev0.axis1.motor.config.pole_pairs = 21   # Set according to your motor
+dev0.axis1.motor.config.calibration_current = 10
+dev0.axis1.encoder.config.cpr = 84  # Counts per revolution of the encoder
 
 # Save Configuration (will trigger reboot)
 try:
@@ -30,34 +30,34 @@ dev0 = odrive.find_any()
 
 # Run Motor Calibration
 print("Calibrating motor...")
-dev0.axis0.requested_state = AXIS_STATE_MOTOR_CALIBRATION
-while dev0.axis0.current_state != AXIS_STATE_IDLE:
+dev0.axis1.requested_state = AXIS_STATE_MOTOR_CALIBRATION
+while dev0.axis1.current_state != AXIS_STATE_IDLE:
     time.sleep(0.1)
 print("Motor calibration done.")
 
 # Check for errors
-if dev0.axis0.motor.error:
-    print(f"Motor Error: {hex(dev0.axis0.motor.error)}")
+if dev0.axis1.motor.error:
+    print(f"Motor Error: {hex(dev0.axis1.motor.error)}")
     exit()
 
 # Run Encoder Calibration
 print("Calibrating encoder...")
-dev0.axis0.requested_state = AXIS_STATE_ENCODER_OFFSET_CALIBRATION
-while dev0.axis0.current_state != AXIS_STATE_IDLE:
+dev0.axis1.requested_state = AXIS_STATE_ENCODER_OFFSET_CALIBRATION
+while dev0.axis1.current_state != AXIS_STATE_IDLE:
     time.sleep(0.1)
 print("Encoder calibration done.")
 
 # Check for errors
-if dev0.axis0.encoder.error:
-    print(f"Encoder Error: {hex(dev0.axis0.encoder.error)}")
+if dev0.axis1.encoder.error:
+    print(f"Encoder Error: {hex(dev0.axis1.encoder.error)}")
     exit()
 
 # Switch to Closed-Loop Control
-dev0.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+dev0.axis1.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 print("Closed-loop control enabled.")
 
 # Set position control mode
-dev0.axis0.controller.config.control_mode = CONTROL_MODE_POSITION_CONTROL
+dev0.axis1.controller.config.control_mode = CONTROL_MODE_POSITION_CONTROL
 print("Position control mode activated")
 
 def move_to_position(target_position, tolerance=5, timeout=10):
@@ -66,11 +66,11 @@ def move_to_position(target_position, tolerance=5, timeout=10):
     - tolerance: allowed position error (counts)
     - timeout: maximum time to reach position (seconds)
     """
-    dev0.axis0.controller.input_pos = target_position
+    dev0.axis1.controller.input_pos = target_position
     start_time = time.time()
     
     while True:
-        current_pos = dev0.axis0.encoder.pos_estimate
+        current_pos = dev0.axis1.encoder.pos_estimate
         error = abs(current_pos - target_position)
         
         print(f"Target: {target_position} | Current: {current_pos:.1f} | Error: {error:.1f}")
@@ -104,6 +104,6 @@ except KeyboardInterrupt:
 
 finally:
     # Stop motor and clean up
-    dev0.axis0.controller.input_pos = dev0.axis0.encoder.pos_estimate
-    dev0.axis0.requested_state = AXIS_STATE_IDLE
+    dev0.axis1.controller.input_pos = dev0.axis1.encoder.pos_estimate
+    dev0.axis1.requested_state = AXIS_STATE_IDLE
     print("\nMotor stopped")
